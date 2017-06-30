@@ -15,7 +15,7 @@
   (println "dispatch:" op op-data)
   (if (= op :states)
     (let [new-states ((mutate op-data) @*states)]
-      (println "states:" new-states)
+      (comment println "states:" new-states)
       (reset! *states new-states)
       (comment swap! *states (mutate op-data)))
     (send! op op-data)))

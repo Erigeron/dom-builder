@@ -36,6 +36,21 @@
                                                   [":color" ":white"]
                                                   [":padding" "|0 8px"]]]},
                          :procs []},
+         "comp.tree" {:ns ["ns"
+                           "app.comp.tree"
+                           [":require-macros" ["[]" "respo.macros" ":refer" ["[]" "defcomp" "<>" "span" "div" "a"]]]
+                           [":require"
+                            ["[]" "hsl.core" ":refer" ["[]" "hsl"]]
+                            ["[]" "respo-ui.style" ":as" "ui"]
+                            ["[]" "respo-ui.style.colors" ":as" "colors"]
+                            ["[]" "respo.core" ":refer" ["[]" "create-comp"]]
+                            ["[]" "respo.comp.space" ":refer" ["[]" "=<"]]
+                            ["[]" "app.style.layout" ":as" "layout"]]],
+                      :defs {"comp-tree" ["defcomp"
+                                          "comp-tree"
+                                          ["node-tree"]
+                                          ["div" ["{}"] ["<>" "span" "|Tree" "nil"]]]},
+                      :procs []},
          "comp.preview" {:ns ["ns"
                               "app.comp.preview"
                               [":require-macros" ["[]" "respo.macros" ":refer" ["[]" "defcomp" "<>" "span" "div" "a"]]]
@@ -65,7 +80,8 @@
                    :procs []},
          "comp.editor" {:ns ["ns"
                              "app.comp.editor"
-                             [":require-macros" ["[]" "respo.macros" ":refer" ["[]" "defcomp" "<>" "span" "div" "a"]]]
+                             [":require-macros"
+                              ["[]" "respo.macros" ":refer" ["[]" "defcomp" "cursor->" "<>" "span" "div" "a"]]]
                              [":require"
                               ["[]" "hsl.core" ":refer" ["[]" "hsl"]]
                               ["[]" "app.schema" ":as" "schema"]
@@ -74,17 +90,19 @@
                               ["[]" "respo.core" ":refer" ["[]" "create-comp"]]
                               ["[]" "respo.comp.space" ":refer" ["[]" "=<"]]
                               ["[]" "app.style.layout" ":as" "layout"]
-                              ["[]" "app.comp.dom-modules" ":refer" ["[]" "comp-dom-modules"]]
+                              ["[]" "app.comp.tree-panel" ":refer" ["[]" "comp-tree-panel"]]
                               ["[]" "app.comp.preview" ":refer" ["[]" "comp-preview"]]
                               ["[]" "app.comp.props" ":refer" ["[]" "comp-props"]]
-                              ["[]" "app.comp.style" ":refer" ["[]" "comp-style"]]]],
+                              ["[]" "app.comp.style" ":refer" ["[]" "comp-style"]]
+                              ["[]" "app.comp.dom-modules" ":refer" ["[]" "comp-dom-modules"]]]],
                         :defs {"comp-editor" ["defcomp"
                                               "comp-editor"
-                                              ["dom-tree" "dom-modules"]
+                                              ["states" "dom-modules" "focus"]
                                               ["div"
                                                ["{}" [":style" "style-editor"]]
-                                               ["comp-dom-modules" "dom-modules"]
-                                               ["comp-preview" "dom-tree"]
+                                               ["comp-preview" "nil"]
+                                               ["cursor->" ":modules" "comp-dom-modules" "states" "dom-modules" "focus"]
+                                               ["comp-tree-panel" "dom-modules" "focus"]
                                                ["comp-props" "nil"]
                                                ["comp-style" "nil"]]],
                                "style-editor" ["def"
@@ -133,7 +151,7 @@
                                                     "comp-container"
                                                     ["states" "store"]
                                                     ["let"
-                                                     [["state" [":data" "states"]]]
+                                                     [["state" [":data" "states"]] ["session" [":session" "store"]]]
                                                      ["if"
                                                       ["nil?" "store"]
                                                       ["div"
@@ -153,8 +171,9 @@
                                                           [":name" "router"]
                                                           [":home"
                                                            ["comp-editor"
-                                                            [":dom-tree" "store"]
-                                                            [":dom-modules" "store"]]]
+                                                            "states"
+                                                            [":dom-modules" "store"]
+                                                            [":focus" "session"]]]
                                                           [":profile" ["comp-profile" [":user" "store"]]]
                                                           ["div"
                                                            ["{}"]
@@ -190,7 +209,7 @@
                                       ["=" "op" ":states"]
                                       ["let"
                                        [["new-states" [["mutate" "op-data"] "@*states"]]]
-                                       ["println" "|states:" "new-states"]
+                                       ["--" "println" "|states:" "new-states"]
                                        ["reset!" "*states" "new-states"]
                                        ["--" "swap!" "*states" ["mutate" "op-data"]]]
                                       ["send!" "op" "op-data"]]],
@@ -455,6 +474,27 @@
                                              ":router/change"
                                              ["{}" [":name" ":editor"] [":data" "nil"] [":router" "nil"]]]]},
                         :procs []},
+         "comp.tree-panel" {:ns ["ns"
+                                 "app.comp.tree-panel"
+                                 [":require-macros"
+                                  ["[]" "respo.macros" ":refer" ["[]" "defcomp" "<>" "span" "div" "a"]]]
+                                 [":require"
+                                  ["[]" "hsl.core" ":refer" ["[]" "hsl"]]
+                                  ["[]" "respo-ui.style" ":as" "ui"]
+                                  ["[]" "respo-ui.style.colors" ":as" "colors"]
+                                  ["[]" "respo.core" ":refer" ["[]" "create-comp"]]
+                                  ["[]" "respo.comp.space" ":refer" ["[]" "=<"]]
+                                  ["[]" "app.style.layout" ":as" "layout"]
+                                  ["[]" "app.comp.tree" ":refer" ["[]" "comp-tree"]]]],
+                            :defs {"comp-tree-panel" ["defcomp"
+                                                      "comp-tree-panel"
+                                                      ["dom-modules" "focus"]
+                                                      ["let"
+                                                       [["tree-node" ["get" "dom-modules" [":module" "focus"]]]]
+                                                       ["div"
+                                                        ["{}" [":style" [":tree" "layout/editor"]]]
+                                                        ["<>" "span" "tree-node" "nil"]]]]},
+                            :procs []},
          "comp.style" {:ns ["ns"
                             "app.comp.style"
                             [":require-macros" ["[]" "respo.macros" ":refer" ["[]" "defcomp" "<>" "span" "div" "a"]]]
@@ -475,8 +515,12 @@
          "comp.dom-modules" {:ns ["ns"
                                   "app.comp.dom-modules"
                                   [":require-macros"
-                                   ["[]" "respo.macros" ":refer" ["[]" "defcomp" "<>" "span" "div" "a"]]]
+                                   ["[]"
+                                    "respo.macros"
+                                    ":refer"
+                                    ["[]" "defcomp" "<>" "span" "div" "a" "input" "button"]]]
                                   [":require"
+                                   ["[]" "clojure.string" ":as" "string"]
                                    ["[]" "hsl.core" ":refer" ["[]" "hsl"]]
                                    ["[]" "respo-ui.style" ":as" "ui"]
                                    ["[]" "respo-ui.style.colors" ":as" "colors"]
@@ -485,10 +529,73 @@
                                    ["[]" "app.style.layout" ":as" "layout"]]],
                              :defs {"comp-dom-modules" ["defcomp"
                                                         "comp-dom-modules"
-                                                        ["dom-modules"]
-                                                        ["div"
-                                                         ["{}" [":style" [":modules" "layout/editor"]]]
-                                                         ["<>" "span" "|Modules" "nil"]]]},
+                                                        ["states" "dom-modules"]
+                                                        ["let"
+                                                         [["state" ["or" [":data" "states"] "|"]]]
+                                                         ["div"
+                                                          ["{}"
+                                                           [":style"
+                                                            ["merge"
+                                                             [":grid" "layout/modules-panel"]
+                                                             [":modules" "layout/editor"]]]]
+                                                          ["div"
+                                                           ["{}"
+                                                            [":style"
+                                                             ["merge" [":list" "layout/modules-panel"] "style-list"]]]
+                                                           ["->>"
+                                                            "dom-modules"
+                                                            ["map"
+                                                             ["fn"
+                                                              ["entry"]
+                                                              ["[]"
+                                                               ["key" "entry"]
+                                                               ["let"
+                                                                [["m" ["val" "entry"]]]
+                                                                ["div"
+                                                                 ["{}"
+                                                                  [":inner-text" [":name" "m"]]
+                                                                  [":on" ["{}" [":click" ["on-choose" [":id" "m"]]]]]]]]]]]]]
+                                                          ["div"
+                                                           ["{}" [":style" [":control" "layout/modules-panel"]]]
+                                                           ["div"
+                                                            ["{}"]
+                                                            ["input"
+                                                             ["{}"
+                                                              [":value" "state"]
+                                                              [":placeholder" "|module name"]
+                                                              [":style" "ui/input"]
+                                                              [":on" ["{}" [":input" "on-input"]]]]]]
+                                                           ["div"
+                                                            ["{}"]
+                                                            ["button"
+                                                             ["{}"
+                                                              [":inner-text" "|Create module"]
+                                                              [":style" "ui/button"]
+                                                              [":on" ["{}" [":click" ["on-create" "state"]]]]]]
+                                                            ["button"
+                                                             ["{}"
+                                                              [":inner-text" "|Rename module"]
+                                                              [":style" "ui/button"]]]
+                                                            ["button"
+                                                             ["{}" [":inner-text" "|Delete"] [":style" "ui/button"]]]]]]]],
+                                    "style-list" ["def"
+                                                  "style-list"
+                                                  ["{}"
+                                                   [":background-color" ["hsl" "0" "0" "90"]]
+                                                   [":overflow" ":auto"]]],
+                                    "on-input" ["defn" "on-input" ["e" "d!" "m!"] ["m!" [":value" "e"]]],
+                                    "on-create" ["defn"
+                                                 "on-create"
+                                                 ["text"]
+                                                 ["fn"
+                                                  ["e" "d!" "m!"]
+                                                  ["if"
+                                                   ["not" ["string/blank?" "text"]]
+                                                   ["do" ["d!" ":dom-modules/create" "text"] ["m!" "|"]]]]],
+                                    "on-choose" ["defn"
+                                                 "on-choose"
+                                                 ["module-id"]
+                                                 ["fn" ["e" "d!" "m!"] ["d!" ":dom-modules/choose" "module-id"]]]},
                              :procs []},
          "style.layout" {:ns ["ns" "app.style.layout"],
                          :defs {"workspace" ["def"
@@ -524,12 +631,26 @@
                                             ["{}"
                                              [":display" ":grid"]
                                              [":grid-template-columns" "|repeat(6,1fr)"]
-                                             [":grid-template-row" "|repeat(2,1fr)"]
+                                             [":grid-template-row" "|repeat(4,1fr)"]
                                              [":grid-gap" "|8px"]
                                              [":justify-items" ":stretch"]
                                              [":align-items" ":stretch"]]]
-                                           [":modules" ["{}" [":grid-area" "|1/1/span 2/span 1"]]]
-                                           [":preview" ["{}" [":grid-area" "|1/2/span 2/span 3"]]]
-                                           [":props" ["{}" [":grid-area" "|1/5/span 1/span 2"]]]
-                                           [":style" ["{}" [":grid-area" "|2/5/span 1/span 2"]]]]]},
+                                           [":modules" ["{}" [":grid-area" "|1/4/span 1/span 2"]]]
+                                           [":preview" ["{}" [":grid-area" "|1/1/span 4/span 3"]]]
+                                           [":tree" ["{}" [":grid-area" "|2/4/span 3/span 2"]]]
+                                           [":props" ["{}" [":grid-area" "|1/6/span 2/span 1"]]]
+                                           [":style" ["{}" [":grid-area" "|3/6/span 2/span 1"]]]]],
+                                "modules-panel" ["def"
+                                                 "modules-panel"
+                                                 ["{}"
+                                                  [":grid"
+                                                   ["{}"
+                                                    [":display" ":grid"]
+                                                    [":justify-items" ":stretch"]
+                                                    [":align-items" ":stretch"]
+                                                    [":grid-template-rows" "|1fr"]
+                                                    [":grid-template-columns" "|1fr 1fr"]
+                                                    [":grid-gap" "|8px"]]]
+                                                  [":list" ["{}" [":grid-area" "|1/1"]]]
+                                                  [":control" ["{}" [":grid-area" "|1/2"]]]]]},
                          :procs []}}}

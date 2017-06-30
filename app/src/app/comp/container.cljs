@@ -22,7 +22,7 @@
 (defcomp
  comp-container
  (states store)
- (let [state (:data states)]
+ (let [state (:data states), session (:session store)]
    (if (nil? store)
      (div
       {:style (merge ui/global ui/fullscreen ui/center)}
@@ -33,7 +33,7 @@
       (if (:logged-in? store)
         (let [router (:router store)]
           (case (:name router)
-            :home (comp-editor (:dom-tree store) (:dom-modules store))
+            :home (comp-editor states (:dom-modules store) (:focus session))
             :profile (comp-profile (:user store))
             (div {} (<> span (str "404 page: " (pr-str router)) nil))))
         (comp-login states))

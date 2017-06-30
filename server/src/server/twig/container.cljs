@@ -10,7 +10,11 @@
        (if logged-in?
          {:session session,
           :logged-in? true,
-          :user (twig-user (get-in db [:users (:user-id session)])),
+          :user (get-in db [:users (:user-id session)]),
+          :focuses (->> (:sessions db)
+                        (map (fn [entry] (let [s (val entry)] [(:user-id s) (:focus s)])))
+                        (into {})),
+          :dom-modules (:modules db),
           :router router,
           :statistics {}}
          {:session session, :logged-in? false})))))

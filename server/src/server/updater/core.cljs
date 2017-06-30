@@ -2,7 +2,8 @@
 (ns server.updater.core
   (:require [server.updater.session :as session]
             [server.updater.user :as user]
-            [server.updater.router :as router]))
+            [server.updater.router :as router]
+            [server.updater.dom-modules :as dom-modules]))
 
 (defn updater [db op op-data session-id op-id op-time]
   (case op
@@ -14,4 +15,6 @@
     :session/remove-notification
       (session/remove-notification db op-data session-id op-id op-time)
     :router/change (router/change db op-data session-id op-id op-time)
+    :dom-modules/create (dom-modules/create db op-data session-id op-id op-time)
+    :dom-modules/choose (dom-modules/choose db op-data session-id op-id op-time)
     db))
