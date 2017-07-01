@@ -24,7 +24,7 @@
 (def editor
   {:grid {:display :grid,
           :grid-template-columns "repeat(6,1fr)",
-          :grid-template-row "repeat(4,1fr)",
+          :grid-template-rows "repeat(4,25%)",
           :grid-gap "8px",
           :justify-items :stretch,
           :align-items :stretch},

@@ -15,9 +15,30 @@
   (let [initial-path (concat [:dom-modules (first op-data) :tree])
         children-path (mapcat (fn [idx] [:children idx]) (drop 2 op-data))
         data-path (concat initial-path children-path)]
-    (println data-path)
     (-> db
         (update-in
          data-path
          (fn [element]
            (update element :children (fn [children] (conj children (merge schema/element)))))))))
+
+(defn focus [db op-data session-id op-id op-time]
+  (assoc-in db [:sessions session-id :focus :path] op-data))
+
+(defn delete-element [db op-data session-id op-id op-time]
+  (if (< (count op-data) 3) (.warn js/console "Invalid path:" (clj->js op-data)))
+  (let [initial-path (concat [:dom-modules (first op-data) :tree])
+        children-path (mapcat
+                       (fn [idx] [:children idx])
+                       (->> op-data (drop 2) (drop-last 1)))
+        data-path (concat initial-path children-path)
+        last-idx (last op-data)]
+    (-> db
+        (update-in
+         data-path
+         (fn [element]
+           (update
+            element
+            :children
+            (fn [children]
+              (vec (concat (take last-idx children) (drop (inc last-idx) children)))))))
+        (assoc-in [:sessions session-id :focus :path] (vec (drop-last 1 op-data))))))

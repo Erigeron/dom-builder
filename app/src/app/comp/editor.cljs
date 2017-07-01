@@ -24,5 +24,5 @@
   (comp-preview nil)
   (cursor-> :modules comp-dom-modules states dom-modules focus)
   (comp-tree-panel dom-modules focus)
-  (comp-props nil)
-  (comp-style nil)))
+  (cursor-> :props comp-props states nil (:path focus))
+  (cursor-> :style comp-style states nil (:path focus))))

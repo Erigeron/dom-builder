@@ -50,7 +50,7 @@
                             ["[]" "app.style" ":as" "style"]]],
                       :defs {"comp-tree" ["defcomp"
                                           "comp-tree"
-                                          ["node-tree" "base-path"]
+                                          ["node-tree" "base-path" "focus-path"]
                                           ["if"
                                            ["=" ":dom-module" [":type" "node-tree"]]
                                            ["let"
@@ -59,27 +59,27 @@
                                              ["{}"]
                                              ["div"
                                               ["{}"
-                                               [":style" "style-module-name"]
+                                               [":style"
+                                                ["merge"
+                                                 "style-module-name"
+                                                 ["if" ["=" "path" "focus-path"] "style-focus"]]]
                                                [":on" ["{}" [":click" ["on-focus" "path"]]]]]
                                               ["<>" "span" [":name" "node-tree"] "nil"]]
                                              ["div"
                                               ["{}" [":style" "style-children"]]
-                                              ["comp-tree" [":tree" "node-tree"] ["conj" "path" ":tree"]]]]]
+                                              ["comp-tree" [":tree" "node-tree"] ["conj" "path" ":tree"] "focus-path"]]]]
                                            ["div"
                                             ["{}"]
                                             ["div"
                                              ["{}"]
                                              ["div"
                                               ["{}"
-                                               [":style" "style-element-name"]
+                                               [":style"
+                                                ["merge"
+                                                 "style-element-name"
+                                                 ["if" ["=" "base-path" "focus-path"] "style-focus"]]]
                                                [":on" ["{}" [":click" ["on-focus" "base-path"]]]]]
-                                              ["<>" "span" [":name" "node-tree"] "nil"]]
-                                             ["=<" "8" "nil"]
-                                             ["button"
-                                              ["{}"
-                                               [":inner-text" "|Append"]
-                                               [":style" "style/tiny-button"]
-                                               [":on" ["{}" [":click" ["on-append" "base-path"]]]]]]]
+                                              ["<>" "span" [":name" "node-tree"] "nil"]]]
                                             ["div"
                                              ["{}" [":style" "style-children"]]
                                              ["->>"
@@ -87,7 +87,9 @@
                                               ["map-indexed"
                                                ["fn"
                                                 ["idx" "child"]
-                                                ["[]" "idx" ["comp-tree" "child" ["conj" "base-path" "idx"]]]]]]]]]],
+                                                ["[]"
+                                                 "idx"
+                                                 ["comp-tree" "child" ["conj" "base-path" "idx"] "focus-path"]]]]]]]]],
                              "style-module-name" ["def"
                                                   "style-module-name"
                                                   ["{}"
@@ -110,11 +112,11 @@
                                                     [":color" ":white"]
                                                     [":line-height" "|1.5em"]
                                                     [":font-size" "12"]]],
-                             "on-focus" ["defn" "on-focus" ["path"] ["fn" ["e" "d!" "m!"] ["println" "|Focus!" "path"]]],
-                             "on-append" ["defn"
-                                          "on-append"
-                                          ["path"]
-                                          ["fn" ["e" "d!" "m!"] ["d!" ":dom-modules/append-element" "path"]]]},
+                             "on-focus" ["defn"
+                                         "on-focus"
+                                         ["path"]
+                                         ["fn" ["e" "d!" "m!"] ["d!" ":dom-modules/focus" "path"]]],
+                             "style-focus" ["def" "style-focus" ["{}" [":outline" "|4px solid red"] [":z-index" "99"]]]},
                       :procs []},
          "comp.preview" {:ns ["ns"
                               "app.comp.preview"
@@ -168,15 +170,16 @@
                                                ["comp-preview" "nil"]
                                                ["cursor->" ":modules" "comp-dom-modules" "states" "dom-modules" "focus"]
                                                ["comp-tree-panel" "dom-modules" "focus"]
-                                               ["comp-props" "nil"]
-                                               ["comp-style" "nil"]]],
+                                               ["cursor->" ":props" "comp-props" "states" "nil" [":path" "focus"]]
+                                               ["cursor->" ":style" "comp-style" "states" "nil" [":path" "focus"]]]],
                                "style-editor" ["def"
                                                "style-editor"
                                                ["merge" [":grid" "layout/editor"] ["{}" [":padding" "|0 16px"]]]]},
                         :procs []},
          "comp.props" {:ns ["ns"
                             "app.comp.props"
-                            [":require-macros" ["[]" "respo.macros" ":refer" ["[]" "defcomp" "<>" "span" "div" "a"]]]
+                            [":require-macros"
+                             ["[]" "respo.macros" ":refer" ["[]" "defcomp" "<>" "span" "div" "a" "input"]]]
                             [":require"
                              ["[]" "hsl.core" ":refer" ["[]" "hsl"]]
                              ["[]" "respo-ui.style" ":as" "ui"]
@@ -186,10 +189,21 @@
                              ["[]" "app.style.layout" ":as" "layout"]]],
                        :defs {"comp-props" ["defcomp"
                                             "comp-props"
-                                            ["props" "path"]
-                                            ["div"
-                                             ["{}" [":style" [":props" "layout/editor"]]]
-                                             ["<>" "span" "|Props" "nil"]]]},
+                                            ["states" "props" "path"]
+                                            ["let"
+                                             [["state" ["or" [":data" "states"] "|"]]]
+                                             ["div"
+                                              ["{}" [":style" [":props" "layout/editor"]]]
+                                              ["div" ["{}"]]
+                                              ["div"
+                                               ["{}"]
+                                               ["input"
+                                                ["{}"
+                                                 [":placeholder" "|key: value"]
+                                                 [":value" "state"]
+                                                 [":style" "ui/input"]
+                                                 [":on" ["{}" [":input" "on-input"]]]]]]]]],
+                              "on-input" ["defn" "on-input" ["e" "d!" "m!"] ["m!" [":value" "e"]]]},
                        :procs []},
          "comp.container" {:ns ["ns"
                                 "app.comp.container"
@@ -362,7 +376,7 @@
                                                ["event"]
                                                ["let"
                                                 [["changes" ["reader/read-string" "event.data"]]]
-                                                ["println" "|Changes" "changes"]
+                                                [".log" "js/console" "|Changes" ["clj->js" "changes"]]
                                                 ["reset!" "*store" ["patch-bunch" "@*store" "changes"]]]]]
                                              ["go" ["loop" ["[]"] [".send" "ws" ["pr-str" ["<!" "sender"]]] ["recur"]]]]]},
                     :procs []},
@@ -552,7 +566,7 @@
          "comp.tree-panel" {:ns ["ns"
                                  "app.comp.tree-panel"
                                  [":require-macros"
-                                  ["[]" "respo.macros" ":refer" ["[]" "defcomp" "<>" "span" "div" "a"]]]
+                                  ["[]" "respo.macros" ":refer" ["[]" "defcomp" "<>" "span" "code" "div" "a" "button"]]]
                                  [":require"
                                   ["[]" "hsl.core" ":refer" ["[]" "hsl"]]
                                   ["[]" "respo-ui.style" ":as" "ui"]
@@ -560,21 +574,46 @@
                                   ["[]" "respo.core" ":refer" ["[]" "create-comp"]]
                                   ["[]" "respo.comp.space" ":refer" ["[]" "=<"]]
                                   ["[]" "app.style.layout" ":as" "layout"]
+                                  ["[]" "app.style" ":as" "style"]
                                   ["[]" "app.comp.tree" ":refer" ["[]" "comp-tree"]]]],
                             :defs {"comp-tree-panel" ["defcomp"
                                                       "comp-tree-panel"
                                                       ["dom-modules" "focus"]
                                                       ["let"
-                                                       [["tree-node" ["get" "dom-modules" [":module" "focus"]]]]
+                                                       [["tree-node" ["get" "dom-modules" [":module" "focus"]]]
+                                                        ["path" [":path" "focus"]]]
                                                        ["div"
                                                         ["{}"
                                                          [":style" ["merge" [":tree" "layout/editor"] "style-panel"]]]
-                                                        ["comp-tree" "tree-node" ["[]"]]]]],
-                                   "style-panel" ["def" "style-panel" ["{}" [":overflow" ":auto"]]]},
+                                                        ["div"
+                                                         ["{}"]
+                                                         ["button"
+                                                          ["{}"
+                                                           [":inner-text" "|Append"]
+                                                           [":style" "style/tiny-button"]
+                                                           [":on" ["{}" [":click" ["on-append" "path"]]]]]]
+                                                         ["=<" "8" "nil"]
+                                                         ["button"
+                                                          ["{}"
+                                                           [":inner-text" "|Delete"]
+                                                           [":style" "style/tiny-button"]
+                                                           [":on" ["{}" [":click" ["on-delete" "path"]]]]]]]
+                                                        ["div" ["{}"] ["<>" "code" "path" "nil"]]
+                                                        ["comp-tree" "tree-node" ["[]"] [":path" "focus"]]]]],
+                                   "style-panel" ["def" "style-panel" ["{}" [":overflow" ":auto"]]],
+                                   "on-delete" ["defn"
+                                                "on-delete"
+                                                ["path"]
+                                                ["fn" ["e" "d!" "m!"] ["d!" ":dom-modules/delete-element" "path"]]],
+                                   "on-append" ["defn"
+                                                "on-append"
+                                                ["path"]
+                                                ["fn" ["e" "d!" "m!"] ["d!" ":dom-modules/append-element" "path"]]]},
                             :procs []},
          "comp.style" {:ns ["ns"
                             "app.comp.style"
-                            [":require-macros" ["[]" "respo.macros" ":refer" ["[]" "defcomp" "<>" "span" "div" "a"]]]
+                            [":require-macros"
+                             ["[]" "respo.macros" ":refer" ["[]" "defcomp" "<>" "span" "div" "a" "input"]]]
                             [":require"
                              ["[]" "hsl.core" ":refer" ["[]" "hsl"]]
                              ["[]" "respo-ui.style" ":as" "ui"]
@@ -584,10 +623,21 @@
                              ["[]" "app.style.layout" ":as" "layout"]]],
                        :defs {"comp-style" ["defcomp"
                                             "comp-style"
-                                            ["style-map" "path"]
-                                            ["div"
-                                             ["{}" [":style" [":style" "layout/editor"]]]
-                                             ["<>" "span" "|Style" "nil"]]]},
+                                            ["states" "style-map" "path"]
+                                            ["let"
+                                             [["state" ["or" [":data" "states"] "|"]]]
+                                             ["div"
+                                              ["{}" [":style" [":style" "layout/editor"]]]
+                                              ["div" ["{}"]]
+                                              ["div"
+                                               ["{}"]
+                                               ["input"
+                                                ["{}"
+                                                 [":value" "state"]
+                                                 [":placeholder" "|key: value"]
+                                                 [":style" "ui/input"]
+                                                 [":on" ["{}" [":input" "on-input"]]]]]]]]],
+                              "on-input" ["defn" "on-input" ["e" "d!" "m!"] ["m!" [":value" "1"]]]},
                        :procs []},
          "comp.dom-modules" {:ns ["ns"
                                   "app.comp.dom-modules"
@@ -712,7 +762,7 @@
                                             ["{}"
                                              [":display" ":grid"]
                                              [":grid-template-columns" "|repeat(6,1fr)"]
-                                             [":grid-template-row" "|repeat(4,1fr)"]
+                                             [":grid-template-rows" "|repeat(4,25%)"]
                                              [":grid-gap" "|8px"]
                                              [":justify-items" ":stretch"]
                                              [":align-items" ":stretch"]]]

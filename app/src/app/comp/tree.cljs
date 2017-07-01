@@ -26,32 +26,34 @@
    :line-height "1.5em",
    :font-size 12})
 
-(defn on-focus [path] (fn [e d! m!] (println "Focus!" path)))
+(defn on-focus [path] (fn [e d! m!] (d! :dom-modules/focus path)))
 
-(defn on-append [path] (fn [e d! m!] (d! :dom-modules/append-element path)))
+(def style-focus {:outline "4px solid red", :z-index 99})
 
 (defcomp
  comp-tree
- (node-tree base-path)
+ (node-tree base-path focus-path)
  (if (= :dom-module (:type node-tree))
    (let [path [(:id node-tree)]]
      (div
       {}
       (div
-       {:style style-module-name, :on {:click (on-focus path)}}
+       {:style (merge style-module-name (if (= path focus-path) style-focus)),
+        :on {:click (on-focus path)}}
        (<> span (:name node-tree) nil))
-      (div {:style style-children} (comp-tree (:tree node-tree) (conj path :tree)))))
+      (div
+       {:style style-children}
+       (comp-tree (:tree node-tree) (conj path :tree) focus-path))))
    (div
     {}
     (div
      {}
      (div
-      {:style style-element-name, :on {:click (on-focus base-path)}}
-      (<> span (:name node-tree) nil))
-     (=< 8 nil)
-     (button
-      {:inner-text "Append", :style style/tiny-button, :on {:click (on-append base-path)}}))
+      {:style (merge style-element-name (if (= base-path focus-path) style-focus)),
+       :on {:click (on-focus base-path)}}
+      (<> span (:name node-tree) nil)))
     (div
      {:style style-children}
      (->> (:children node-tree)
-          (map-indexed (fn [idx child] [idx (comp-tree child (conj base-path idx))])))))))
+          (map-indexed
+           (fn [idx child] [idx (comp-tree child (conj base-path idx) focus-path)])))))))
