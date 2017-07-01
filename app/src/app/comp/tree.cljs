@@ -38,18 +38,16 @@
      (div
       {}
       (div
-       {:inner-text (:name node-tree),
-        :style style-module-name,
-        :on {:click (on-focus path)}})
+       {:style style-module-name, :on {:click (on-focus path)}}
+       (<> span (:name node-tree) nil))
       (div {:style style-children} (comp-tree (:tree node-tree) (conj path :tree)))))
    (div
     {}
     (div
      {}
      (div
-      {:inner-text (:name node-tree),
-       :style style-element-name,
-       :on {:click (on-focus base-path)}})
+      {:style style-element-name, :on {:click (on-focus base-path)}}
+      (<> span (:name node-tree) nil))
      (=< 8 nil)
      (button
       {:inner-text "Append", :style style/tiny-button, :on {:click (on-append base-path)}}))
