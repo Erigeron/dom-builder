@@ -9,8 +9,10 @@
             [app.style.layout :as layout]
             [app.comp.tree :refer [comp-tree]]))
 
+(def style-panel {:overflow :auto})
+
 (defcomp
  comp-tree-panel
  (dom-modules focus)
  (let [tree-node (get dom-modules (:module focus))]
-   (div {:style (:tree layout/editor)} (<> span tree-node nil))))
+   (div {:style (merge (:tree layout/editor) style-panel)} (comp-tree tree-node []))))

@@ -17,4 +17,6 @@
     :router/change (router/change db op-data session-id op-id op-time)
     :dom-modules/create (dom-modules/create db op-data session-id op-id op-time)
     :dom-modules/choose (dom-modules/choose db op-data session-id op-id op-time)
-    db))
+    :dom-modules/append-element
+      (dom-modules/append-element db op-data session-id op-id op-time)
+    (do (println "Unhandled op:" (str op)) db)))

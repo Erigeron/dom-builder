@@ -12,7 +12,7 @@
 (defonce *states (atom {}))
 
 (defn dispatch! [op op-data]
-  (println "dispatch:" op op-data)
+  (.info js/console "Dispatch" (str op) (clj->js op-data))
   (if (= op :states)
     (let [new-states ((mutate op-data) @*states)]
       (comment println "states:" new-states)

@@ -28,7 +28,34 @@
                                                  ["assoc-in"
                                                   "db"
                                                   ["[]" ":sessions" "session-id" ":focus" ":module"]
-                                                  "op-data"]]},
+                                                  "op-data"]],
+                                       "append-element" ["defn"
+                                                         "append-element"
+                                                         ["db" "op-data" "session-id" "op-id" "op-time"]
+                                                         ["if"
+                                                          ["<" ["count" "op-data"] "2"]
+                                                          [".warn" "js/console" "|Invalid path:" ["clj->js" "op-data"]]]
+                                                         ["let"
+                                                          [["initial-path"
+                                                            ["concat" ["[]" ":dom-modules" ["first" "op-data"] ":tree"]]]
+                                                           ["children-path"
+                                                            ["mapcat"
+                                                             ["fn" ["idx"] ["[]" ":children" "idx"]]
+                                                             ["drop" "2" "op-data"]]]
+                                                           ["data-path" ["concat" "initial-path" "children-path"]]]
+                                                          ["println" "data-path"]
+                                                          ["->"
+                                                           "db"
+                                                           ["update-in"
+                                                            "data-path"
+                                                            ["fn"
+                                                             ["element"]
+                                                             ["update"
+                                                              "element"
+                                                              ":children"
+                                                              ["fn"
+                                                               ["children"]
+                                                               ["conj" "children" ["merge" "schema/element"]]]]]]]]]},
                                 :procs []},
          "twig.container" {:ns ["ns"
                                 "server.twig.container"
@@ -61,7 +88,7 @@
                                                               [["s" ["val" "entry"]]]
                                                               ["[]" [":user-id" "s"] [":focus" "s"]]]]]
                                                            ["into" ["{}"]]]]
-                                                         [":dom-modules" [":modules" "db"]]
+                                                         [":dom-modules" [":dom-modules" "db"]]
                                                          [":router" "router"]
                                                          [":statistics" ["{}"]]]
                                                         ["{}" [":session" "session"] [":logged-in?" "false"]]]]]]]},
@@ -73,7 +100,13 @@
                                       ["reduce" ["fn" ["_" "x"] ["when" ["f" "x"] ["reduced" "x"]]] "nil" "xs"]]},
                  :procs []},
          "schema" {:ns ["ns" "server.schema"],
-                   :defs {"user" ["def"
+                   :defs {"dom-module" ["def"
+                                        "dom-module"
+                                        ["{}" [":type" ":dom-module"] [":name" "|empty"] [":id" "nil"] [":tree" "nil"]]],
+                          "configs" ["def"
+                                     "configs"
+                                     ["{}" [":storage-key" "|/data/cumulo/workflow-storage.edn"] [":port" "5021"]]],
+                          "user" ["def"
                                   "user"
                                   ["{}"
                                    [":name" "nil"]
@@ -82,15 +115,20 @@
                                    [":avatar" "nil"]
                                    [":password" "nil"]
                                    [":focus" ["{}" [":module" "nil"] [":path" ["[]"]]]]]],
-                          "router" ["def"
-                                    "router"
-                                    ["{}" [":name" "nil"] [":title" "nil"] [":data" ["{}"]] [":router" "nil"]]],
-                          "configs" ["def"
-                                     "configs"
-                                     ["{}" [":storage-key" "|/data/cumulo/workflow-storage.edn"] [":port" "5021"]]],
+                          "element" ["def"
+                                     "element"
+                                     ["{}"
+                                      [":type" ":element"]
+                                      [":name" ":div"]
+                                      [":props" ["{}"]]
+                                      [":style" ["{}"]]
+                                      [":children" ["[]"]]]],
                           "database" ["def"
                                       "database"
                                       ["{}" [":sessions" ["{}"]] [":users" ["{}"]] [":dom-modules" ["{}"]]]],
+                          "router" ["def"
+                                    "router"
+                                    ["{}" [":name" "nil"] [":title" "nil"] [":data" ["{}"]] [":router" "nil"]]],
                           "session" ["def"
                                      "session"
                                      ["{}"
@@ -100,18 +138,7 @@
                                       [":router" ["{}" [":name" ":home"] [":data" "nil"] [":router" "nil"]]]
                                       [":focus" ["{}" [":module" "nil"] [":path" ["[]"]]]]
                                       [":notifications" ["[]"]]]],
-                          "notification" ["def" "notification" ["{}" [":id" "nil"] [":kind" "nil"] [":text" "nil"]]],
-                          "element" ["def"
-                                     "element"
-                                     ["{}"
-                                      [":type" ":element"]
-                                      [":name" ":div"]
-                                      [":props" ["{}"]]
-                                      [":style" ["{}"]]
-                                      [":children" ["[]"]]]],
-                          "dom-module" ["def"
-                                        "dom-module"
-                                        ["{}" [":type" ":dom-module"] [":name" "|empty"] [":id" "nil"] [":tree" "nil"]]]},
+                          "notification" ["def" "notification" ["{}" [":id" "nil"] [":kind" "nil"] [":text" "nil"]]]},
                    :procs []},
          "updater.user" {:ns ["ns" "server.updater.user" [":require" ["[]" "server.util" ":refer" ["[]" "find-first"]]]],
                          :defs {"sign-up" ["defn"
@@ -418,5 +445,12 @@
                                              ["dom-modules/create" "db" "op-data" "session-id" "op-id" "op-time"]]
                                             [":dom-modules/choose"
                                              ["dom-modules/choose" "db" "op-data" "session-id" "op-id" "op-time"]]
-                                            "db"]]},
+                                            [":dom-modules/append-element"
+                                             ["dom-modules/append-element"
+                                              "db"
+                                              "op-data"
+                                              "session-id"
+                                              "op-id"
+                                              "op-time"]]
+                                            ["do" ["println" "|Unhandled op:" ["str" "op"]] "db"]]]},
                          :procs []}}}

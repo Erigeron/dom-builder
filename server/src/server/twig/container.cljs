@@ -14,7 +14,7 @@
           :focuses (->> (:sessions db)
                         (map (fn [entry] (let [s (val entry)] [(:user-id s) (:focus s)])))
                         (into {})),
-          :dom-modules (:modules db),
+          :dom-modules (:dom-modules db),
           :router router,
           :statistics {}}
          {:session session, :logged-in? false})))))

@@ -18,6 +18,8 @@
 
 (defn on-choose [module-id] (fn [e d! m!] (d! :dom-modules/choose module-id)))
 
+(def style-entry {:padding "0 8px", :cursor :pointer})
+
 (defcomp
  comp-dom-modules
  (states dom-modules)
@@ -31,7 +33,10 @@
            (fn [entry]
              [(key entry)
               (let [m (val entry)]
-                (div {:inner-text (:name m), :on {:click (on-choose (:id m))}}))]))))
+                (div
+                 {:inner-text (:name m),
+                  :style style-entry,
+                  :on {:click (on-choose (:id m))}}))]))))
     (div
      {:style (:control layout/modules-panel)}
      (div
