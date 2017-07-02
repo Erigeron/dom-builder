@@ -28,6 +28,7 @@
        path (:path focus)]
    (div
     {:style (merge (:tree layout/editor) style-panel)}
+    (div {} (<> code path nil))
     (div
      {}
      (input {:placeholder "element", :value state, :style ui/input, :on {:input on-input}})
@@ -37,5 +38,4 @@
      (button {:inner-text "Rename", :style ui/button, :on {:click (on-rename state)}})
      (=< 8 nil)
      (button {:inner-text "Delete", :style ui/button, :on {:click (on-delete path)}}))
-    (div {} (<> code path nil))
-    (comp-tree tree-node [] (:path focus)))))
+    (if (some? tree-node) (comp-tree tree-node [] (:path focus))))))
