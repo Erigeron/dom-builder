@@ -133,6 +133,9 @@
                                                 ["tree" "path"]
                                                 ["div"
                                                  ["{}" [":style" ["merge" "ui/center" "style-preview"]]]
+                                                 ["div"
+                                                  ["{}" [":style" "style-close"] [":on" ["{}" [":click" "on-close"]]]]
+                                                  ["<>" "span" "|Close" "nil"]]
                                                  ["if"
                                                   ["some?" "tree"]
                                                   ["render-element" "tree" "path" ["[]" ["first" "path"]]]
@@ -140,7 +143,6 @@
                                 "style-preview" ["def"
                                                  "style-preview"
                                                  ["merge"
-                                                  [":preview" "layout/editor"]
                                                   ["{}"
                                                    [":background-color" ["hsl" "0" "0" "90"]]
                                                    [":padding" "8"]
@@ -173,7 +175,22 @@
                                                         ["[]"
                                                          "idx"
                                                          ["render-element" "child" "focused-path" ["conj" "path" "idx"]]]]]]]]
-                                                   "nil"]]},
+                                                   "nil"]],
+                                "style-close" ["def"
+                                               "style-close"
+                                               ["{}"
+                                                [":position" ":fixed"]
+                                                [":top" "8"]
+                                                [":right" "8"]
+                                                [":z-index" "999"]
+                                                [":font-size" "12"]
+                                                [":font-family" "|Josefin Sans"]
+                                                [":cursor" ":pointer"]
+                                                [":color" ["hsl" "0" "0" "20" "0.5"]]]],
+                                "on-close" ["defn"
+                                            "on-close"
+                                            ["e" "d!" "m!"]
+                                            ["d!" ":router/change" ["{}" [":name" ":home"] [":data" "nil"]]]]},
                          :procs []},
          "schema" {:ns ["ns" "app.schema"],
                    :defs {"configs" ["def" "configs" ["{}" [":storage-key" "|workflow-storage"] [":port" "5021"]]]},
@@ -191,7 +208,6 @@
                               ["[]" "respo.comp.space" ":refer" ["[]" "=<"]]
                               ["[]" "app.style.layout" ":as" "layout"]
                               ["[]" "app.comp.tree-panel" ":refer" ["[]" "comp-tree-panel"]]
-                              ["[]" "app.comp.preview" ":refer" ["[]" "comp-preview"]]
                               ["[]" "app.comp.props" ":refer" ["[]" "comp-props"]]
                               ["[]" "app.comp.style" ":refer" ["[]" "comp-style"]]
                               ["[]" "app.comp.dom-modules" ":refer" ["[]" "comp-dom-modules"]]]],
@@ -212,7 +228,6 @@
                                                    ["mapcat" ["fn" ["x"] ["[]" ":children" "x"]] ["drop" "2" "path"]]]]]]
                                                ["div"
                                                 ["{}" [":style" "style-editor"]]
-                                                ["comp-preview" "dom-module" "path"]
                                                 ["cursor->"
                                                  ":modules"
                                                  "comp-dom-modules"
@@ -312,7 +327,8 @@
                                  ["[]" "app.comp.login" ":refer" ["[]" "comp-login"]]
                                  ["[]" "respo-message.comp.msg-list" ":refer" ["[]" "comp-msg-list"]]
                                  ["[]" "app.style.layout" ":as" "layout"]
-                                 ["[]" "app.comp.editor" ":refer" ["[]" "comp-editor"]]]],
+                                 ["[]" "app.comp.editor" ":refer" ["[]" "comp-editor"]]
+                                 ["[]" "app.comp.preview" ":refer" ["[]" "comp-preview"]]]],
                            :defs {"style-alert" ["def"
                                                  "style-alert"
                                                  ["{}"
@@ -330,31 +346,43 @@
                                                        ["{}"
                                                         [":style" ["merge" "ui/global" "ui/fullscreen" "ui/center"]]]
                                                        ["<>" "span" "|No connection!" "style-alert"]]
-                                                      ["div"
-                                                       ["{}"
-                                                        [":style"
-                                                         ["merge" "ui/global" "ui/fullscreen" "style-contaier"]]]
-                                                       ["comp-header" [":logged-in?" "store"]]
-                                                       ["if"
-                                                        [":logged-in?" "store"]
-                                                        ["let"
-                                                         [["router" [":router" "store"]]]
-                                                         ["case"
-                                                          [":name" "router"]
-                                                          [":home"
-                                                           ["comp-editor"
-                                                            "states"
-                                                            [":dom-modules" "store"]
-                                                            [":focus" "session"]]]
-                                                          [":profile" ["comp-profile" [":user" "store"]]]
-                                                          ["div"
-                                                           ["{}"]
-                                                           ["<>" "span" ["str" "|404 page: " ["pr-str" "router"]] "nil"]]]]
-                                                        ["comp-login" "states"]]
-                                                       ["comp-inspect" "|Store" "store" "style-debugger"]
-                                                       ["comp-msg-list"
-                                                        ["get-in" "store" ["[]" ":session" ":notifications"]]
-                                                        ":session/remove-notification"]]]]],
+                                                      ["if"
+                                                       ["=" ":preview" ["get-in" "store" ["[]" ":router" ":name"]]]
+                                                       ["let"
+                                                        [["module-id" ["get-in" "session" ["[]" ":focus" ":module"]]]
+                                                         ["dom-module"
+                                                          ["get-in" "store" ["[]" ":dom-modules" "module-id"]]]]
+                                                        ["comp-preview"
+                                                         "dom-module"
+                                                         ["->" "session" ":session" ":path"]]]
+                                                       ["div"
+                                                        ["{}"
+                                                         [":style"
+                                                          ["merge" "ui/global" "ui/fullscreen" "style-contaier"]]]
+                                                        ["comp-header" [":logged-in?" "store"]]
+                                                        ["if"
+                                                         [":logged-in?" "store"]
+                                                         ["let"
+                                                          [["router" [":router" "store"]]]
+                                                          ["case"
+                                                           [":name" "router"]
+                                                           [":home"
+                                                            ["comp-editor"
+                                                             "states"
+                                                             [":dom-modules" "store"]
+                                                             [":focus" "session"]]]
+                                                           [":profile" ["comp-profile" [":user" "store"]]]
+                                                           ["div"
+                                                            ["{}"]
+                                                            ["<>"
+                                                             "span"
+                                                             ["str" "|404 page: " ["pr-str" "router"]]
+                                                             "nil"]]]]
+                                                         ["comp-login" "states"]]
+                                                        ["comp-inspect" "|Store" "store" "style-debugger"]
+                                                        ["comp-msg-list"
+                                                         ["get-in" "store" ["[]" ":session" ":notifications"]]
+                                                         ":session/remove-notification"]]]]]],
                                   "style-debugger" ["def"
                                                     "style-debugger"
                                                     ["{}" [":bottom" "0"] [":left" "0"] [":max-width" "|100%"]]],
@@ -628,6 +656,12 @@
                                                 ["<>" "span" "|Cumulo" "nil"]]
                                                ["div"
                                                 ["{}"
+                                                 [":on" ["{}" [":click" "on-preview"]]]
+                                                 [":style"
+                                                  ["merge" [":logo" "layout/editor"] ["{}" [":cursor" ":pointer"]]]]]
+                                                ["<>" "span" "|Preview" "nil"]]
+                                               ["div"
+                                                ["{}"
                                                  [":style" ["merge" [":profile" "layout/header"] "style-pointer"]]
                                                  [":on" ["{}" [":click" "on-profile"]]]]
                                                 ["<>" "span" ["if" "logged-in?" "|Me" "|Guest"] "nil"]]]],
@@ -649,12 +683,12 @@
                                           ["d!"
                                            ":router/change"
                                            ["{}" [":name" ":home"] [":data" "nil"] [":router" "nil"]]]],
-                               "on-editor" ["defn"
-                                            "on-editor"
-                                            ["e" "d!" "m!"]
-                                            ["d!"
-                                             ":router/change"
-                                             ["{}" [":name" ":editor"] [":data" "nil"] [":router" "nil"]]]]},
+                               "on-preview" ["defn"
+                                             "on-preview"
+                                             ["e" "d!" "m!"]
+                                             ["d!"
+                                              ":router/change"
+                                              ["{}" [":name" ":preview"] [":data" "nil"] [":router" "nil"]]]]},
                         :procs []},
          "comp.tree-panel" {:ns ["ns"
                                  "app.comp.tree-panel"
@@ -890,7 +924,6 @@
                                                 [":display" "|grid"]
                                                 [":grid-template-rows" "|60px 1fr"]
                                                 [":grid-template-columns" "|1fr"]
-                                                [":grid-gap" "|16px"]
                                                 [":justify-items" ":stretch"]
                                                 [":align-items" ":stretch"]]]
                                               [":header" ["{}" [":grid-area" "|1/1"]]]
@@ -902,11 +935,12 @@
                                             ["{}"
                                              [":display" ":grid"]
                                              [":grid-template-rows" "|1fr"]
-                                             [":grid-template-columns" "|80px 1fr 80px"]
+                                             [":grid-template-columns" "|80px 80px 1fr 80px"]
                                              [":grid-gap" "|8px"]
                                              [":align-items" ":center"]
                                              [":justify-items" ":center"]]]
                                            [":logo" ["{}" [":grid-area" "|1/1"]]]
+                                           [":editor" ["{}" [":grid-area" "|1/2"]]]
                                            [":profile" ["{}" [":grid-area" "|1/4"]]]]],
                                 "editor" ["def"
                                           "editor"
@@ -915,15 +949,14 @@
                                             ["{}"
                                              [":display" ":grid"]
                                              [":grid-template-columns" "|repeat(6,1fr)"]
-                                             [":grid-template-rows" "|repeat(4,25%)"]
+                                             [":grid-template-rows" "|repeat(2,25%)"]
                                              [":grid-gap" "|8px"]
                                              [":justify-items" ":stretch"]
                                              [":align-items" ":stretch"]]]
-                                           [":modules" ["{}" [":grid-area" "|1/4/span 1/span 2"]]]
-                                           [":preview" ["{}" [":grid-area" "|1/1/span 4/span 3"]]]
-                                           [":tree" ["{}" [":grid-area" "|2/4/span 3/span 2"]]]
-                                           [":props" ["{}" [":grid-area" "|1/6/span 2/span 1"]]]
-                                           [":style" ["{}" [":grid-area" "|3/6/span 2/span 1"]]]]],
+                                           [":modules" ["{}" [":grid-area" "|1/1/span 2/span 1"]]]
+                                           [":tree" ["{}" [":grid-area" "|1/2/span 2/span 3"]]]
+                                           [":props" ["{}" [":grid-area" "|1/5/span 1/span 2"]]]
+                                           [":style" ["{}" [":grid-area" "|2/5/span 1/span 2"]]]]],
                                 "modules-panel" ["def"
                                                  "modules-panel"
                                                  ["{}"

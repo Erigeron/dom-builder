@@ -24,6 +24,8 @@
 
 (defn on-home [e d! m!] (d! :router/change {:name :home, :data nil, :router nil}))
 
+(defn on-preview [e d! m!] (d! :router/change {:name :preview, :data nil, :router nil}))
+
 (defcomp
  comp-header
  (logged-in?)
@@ -33,7 +35,8 @@
    {:on {:click on-home}, :style (merge (:logo layout/header) {:cursor :pointer})}
    (<> span "Cumulo" nil))
   (div
+   {:on {:click on-preview}, :style (merge (:logo layout/editor) {:cursor :pointer})}
+   (<> span "Preview" nil))
+  (div
    {:style (merge (:profile layout/header) style-pointer), :on {:click on-profile}}
    (<> span (if logged-in? "Me" "Guest") nil))))
-
-(defn on-editor [e d! m!] (d! :router/change {:name :editor, :data nil, :router nil}))

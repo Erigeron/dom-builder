@@ -9,7 +9,6 @@
             [respo.comp.space :refer [=<]]
             [app.style.layout :as layout]
             [app.comp.tree-panel :refer [comp-tree-panel]]
-            [app.comp.preview :refer [comp-preview]]
             [app.comp.props :refer [comp-props]]
             [app.comp.style :refer [comp-style]]
             [app.comp.dom-modules :refer [comp-dom-modules]]))
@@ -28,7 +27,6 @@
                  (get-in (:tree dom-module) (mapcat (fn [x] [:children x]) (drop 2 path))))]
    (div
     {:style style-editor}
-    (comp-preview dom-module path)
     (cursor-> :modules comp-dom-modules states dom-modules focus)
     (cursor-> :tree comp-tree-panel states dom-modules focus)
     (cursor-> :props comp-props states (:props element) (:path focus))

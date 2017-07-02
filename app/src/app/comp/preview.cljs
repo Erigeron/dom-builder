@@ -9,9 +9,7 @@
             [app.style.layout :as layout]))
 
 (def style-preview
-  (merge
-   (:preview layout/editor)
-   {:background-color (hsl 0 0 90), :padding 8, :color colors/texture, :overflow :auto}))
+  (merge {:background-color (hsl 0 0 90), :padding 8, :color colors/texture, :overflow :auto}))
 
 (defn render-element [tree focused-path path]
   (if (some? tree)
@@ -27,9 +25,22 @@
              (fn [idx child] [idx (render-element child focused-path (conj path idx))])))))
     nil))
 
+(def style-close
+  {:position :fixed,
+   :top 8,
+   :right 8,
+   :z-index 999,
+   :font-size 12,
+   :font-family "Josefin Sans",
+   :cursor :pointer,
+   :color (hsl 0 0 20 0.5)})
+
+(defn on-close [e d! m!] (d! :router/change {:name :home, :data nil}))
+
 (defcomp
  comp-preview
  (tree path)
  (div
   {:style (merge ui/center style-preview)}
+  (div {:style style-close, :on {:click on-close}} (<> span "Close" nil))
   (if (some? tree) (render-element tree path [(first path)]) (<> span "nothing" nil))))
