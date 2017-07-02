@@ -106,7 +106,7 @@
                              "style-element-name" ["def"
                                                    "style-element-name"
                                                    ["{}"
-                                                    [":background-color" ["hsl" "260" "80" "50"]]
+                                                    [":background-color" ["hsl" "260" "80" "70"]]
                                                     [":padding" "|0 8px"]
                                                     [":display" ":inline-block"]
                                                     [":cursor" ":pointer"]
@@ -117,7 +117,7 @@
                                          "on-focus"
                                          ["path"]
                                          ["fn" ["e" "d!" "m!"] ["d!" ":dom-modules/focus" "path"]]],
-                             "style-focus" ["def" "style-focus" ["{}" [":outline" "|4px solid red"] [":z-index" "99"]]]},
+                             "style-focus" ["def" "style-focus" ["{}" [":border" "|2px solid red"] [":z-index" "99"]]]},
                       :procs []},
          "comp.preview" {:ns ["ns"
                               "app.comp.preview"
@@ -162,7 +162,6 @@
                                                     ["=" ":dom-module" [":type" "tree"]]
                                                     ["let"
                                                      [["nested-module" ["get" "dom-modules" [":id" "tree"]]]]
-                                                     ["println" "|get modules" "nested-module"]
                                                      ["recur"
                                                       [":tree" "nested-module"]
                                                       "focused-path"
@@ -177,9 +176,11 @@
                                                        [":style"
                                                         ["merge"
                                                          [":style" "tree"]
-                                                         ["if"
-                                                          ["=" "focused-path" "path"]
-                                                          ["{}" [":outline" "|4px solid blue"]]]]]]]
+                                                         ["do"
+                                                          ["println" "|compare" "focused-path" "path"]
+                                                          ["if"
+                                                           ["=" "focused-path" "path"]
+                                                           ["{}" [":outline" "|4px solid blue"]]]]]]]]
                                                      ["->>"
                                                       [":children" "tree"]
                                                       ["map-indexed"

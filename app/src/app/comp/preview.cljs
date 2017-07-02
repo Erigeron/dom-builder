@@ -15,18 +15,16 @@
   (if (and (some? tree) (< level 20))
     (if (= :dom-module (:type tree))
       (let [nested-module (get dom-modules (:id tree))]
-        (println "get modules" nested-module)
-        (recur
-         (:tree nested-module)
-         focused-path
-         dom-modules
-         [(:id tree) :tree]
-         (inc level)))
+        (recur (:tree nested-module) focused-path dom-modules [(:id tree) :tree] (inc level)))
       (create-element
        (:name tree)
        (merge
         (:props tree)
-        {:style (merge (:style tree) (if (= focused-path path) {:outline "4px solid blue"}))})
+        {:style (merge
+                 (:style tree)
+                 (do
+                  (println "compare" focused-path path)
+                  (if (= focused-path path) {:outline "4px solid blue"})))})
        (->> (:children tree)
             (map-indexed
              (fn [idx child]

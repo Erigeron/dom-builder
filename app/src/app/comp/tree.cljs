@@ -18,7 +18,7 @@
 (def style-children {:padding-left 16, :border-left (str "1px solid " (hsl 0 0 90))})
 
 (def style-element-name
-  {:background-color (hsl 260 80 50),
+  {:background-color (hsl 260 80 70),
    :padding "0 8px",
    :display :inline-block,
    :cursor :pointer,
@@ -28,7 +28,7 @@
 
 (defn on-focus [path] (fn [e d! m!] (d! :dom-modules/focus path)))
 
-(def style-focus {:outline "4px solid red", :z-index 99})
+(def style-focus {:border "2px solid red", :z-index 99})
 
 (defcomp
  comp-tree
