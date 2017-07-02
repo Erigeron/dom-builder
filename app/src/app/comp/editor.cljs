@@ -19,10 +19,17 @@
 (defcomp
  comp-editor
  (states dom-modules focus)
- (div
-  {:style style-editor}
-  (comp-preview nil)
-  (cursor-> :modules comp-dom-modules states dom-modules focus)
-  (comp-tree-panel dom-modules focus)
-  (cursor-> :props comp-props states nil (:path focus))
-  (cursor-> :style comp-style states nil (:path focus))))
+ (let [path (:path focus)
+       module-id (first path)
+       dom-module (get dom-modules module-id)
+       element (case (count path)
+                 1 nil
+                 2 (:tree dom-module)
+                 (get-in (:tree dom-module) (mapcat (fn [x] [:children x]) (drop 2 path))))]
+   (div
+    {:style style-editor}
+    (comp-preview nil)
+    (cursor-> :modules comp-dom-modules states dom-modules focus)
+    (cursor-> :tree comp-tree-panel states dom-modules focus)
+    (cursor-> :props comp-props states (:props element) (:path focus))
+    (cursor-> :style comp-style states (:style element) (:path focus)))))

@@ -9,7 +9,9 @@
                            :procs []},
          "updater.dom-modules" {:ns ["ns"
                                      "server.updater.dom-modules"
-                                     [":require" ["[]" "server.schema" ":as" "schema"]]],
+                                     [":require"
+                                      ["[]" "server.schema" ":as" "schema"]
+                                      ["[]" "server.util" ":refer" ["[]" "expand-tree-path"]]]],
                                 :defs {"create" ["defn"
                                                  "create"
                                                  ["db" "op-data" "session-id" "op-id" "op-time"]
@@ -32,29 +34,34 @@
                                        "append-element" ["defn"
                                                          "append-element"
                                                          ["db" "op-data" "session-id" "op-id" "op-time"]
-                                                         ["if"
-                                                          ["<" ["count" "op-data"] "2"]
-                                                          [".warn" "js/console" "|Invalid path:" ["clj->js" "op-data"]]]
                                                          ["let"
-                                                          [["initial-path"
-                                                            ["concat" ["[]" ":dom-modules" ["first" "op-data"] ":tree"]]]
-                                                           ["children-path"
-                                                            ["mapcat"
-                                                             ["fn" ["idx"] ["[]" ":children" "idx"]]
-                                                             ["drop" "2" "op-data"]]]
-                                                           ["data-path" ["concat" "initial-path" "children-path"]]]
-                                                          ["->"
-                                                           "db"
-                                                           ["update-in"
-                                                            "data-path"
-                                                            ["fn"
-                                                             ["element"]
-                                                             ["update"
-                                                              "element"
-                                                              ":children"
+                                                          [["path"
+                                                            ["get-in"
+                                                             "db"
+                                                             ["[]" ":sessions" "session-id" ":focus" ":path"]]]]
+                                                          ["if"
+                                                           ["<" ["count" "path"] "2"]
+                                                           ["do"
+                                                            [".warn" "js/console" "|Invalid path:" ["clj->js" "path"]]
+                                                            "db"]
+                                                           ["let"
+                                                            [["data-path" ["expand-tree-path" "path"]]]
+                                                            ["->"
+                                                             "db"
+                                                             ["update-in"
+                                                              "data-path"
                                                               ["fn"
-                                                               ["children"]
-                                                               ["conj" "children" ["merge" "schema/element"]]]]]]]]],
+                                                               ["element"]
+                                                               ["update"
+                                                                "element"
+                                                                ":children"
+                                                                ["fn"
+                                                                 ["children"]
+                                                                 ["conj"
+                                                                  "children"
+                                                                  ["merge"
+                                                                   "schema/element"
+                                                                   ["{}" [":name" ["keyword" "op-data"]]]]]]]]]]]]]],
                                        "focus" ["defn"
                                                 "focus"
                                                 ["db" "op-data" "session-id" "op-id" "op-time"]
@@ -69,13 +76,8 @@
                                                           ["<" ["count" "op-data"] "3"]
                                                           [".warn" "js/console" "|Invalid path:" ["clj->js" "op-data"]]]
                                                          ["let"
-                                                          [["initial-path"
-                                                            ["concat" ["[]" ":dom-modules" ["first" "op-data"] ":tree"]]]
-                                                           ["children-path"
-                                                            ["mapcat"
-                                                             ["fn" ["idx"] ["[]" ":children" "idx"]]
-                                                             ["->>" "op-data" ["drop" "2"] ["drop-last" "1"]]]]
-                                                           ["data-path" ["concat" "initial-path" "children-path"]]
+                                                          [["data-path"
+                                                            ["expand-tree-path" ["drop-last" "1" "op-data"]]]
                                                            ["last-idx" ["last" "op-data"]]]
                                                           ["->"
                                                            "db"
@@ -94,7 +96,61 @@
                                                                  ["drop" ["inc" "last-idx"] "children"]]]]]]]
                                                            ["assoc-in"
                                                             ["[]" ":sessions" "session-id" ":focus" ":path"]
-                                                            ["vec" ["drop-last" "1" "op-data"]]]]]]},
+                                                            ["vec" ["drop-last" "1" "op-data"]]]]]],
+                                       "rename-element" ["defn"
+                                                         "rename-element"
+                                                         ["db" "op-data" "session-id" "op-id" "op-time"]
+                                                         ["let"
+                                                          [["path"
+                                                            ["get-in"
+                                                             "db"
+                                                             ["[]" ":sessions" "session-id" ":focus" ":path"]]]]
+                                                          ["update-in"
+                                                           "db"
+                                                           ["expand-tree-path" "path"]
+                                                           ["fn"
+                                                            ["element"]
+                                                            ["assoc" "element" ":name" ["keyword" "op-data"]]]]]],
+                                       "set-style" ["defn"
+                                                    "set-style"
+                                                    ["db" "op-data" "session-id" "op-id" "op-time"]
+                                                    ["let"
+                                                     [["path"
+                                                       ["get-in" "db" ["[]" ":sessions" "session-id" ":focus" ":path"]]]]
+                                                     ["update-in"
+                                                      "db"
+                                                      ["expand-tree-path" "path"]
+                                                      ["fn"
+                                                       ["element"]
+                                                       ["update"
+                                                        "element"
+                                                        ":style"
+                                                        ["fn"
+                                                         ["style"]
+                                                         ["if"
+                                                          ["some?" [":value" "op-data"]]
+                                                          ["assoc" "style" [":prop" "op-data"] [":value" "op-data"]]
+                                                          ["dissoc" "style" [":prop" "op-data"]]]]]]]]],
+                                       "set-prop" ["defn"
+                                                   "set-prop"
+                                                   ["db" "op-data" "session-id" "op-id" "op-time"]
+                                                   ["let"
+                                                    [["path"
+                                                      ["get-in" "db" ["[]" ":sessions" "session-id" ":focus" ":path"]]]]
+                                                    ["update-in"
+                                                     "db"
+                                                     ["expand-tree-path" "path"]
+                                                     ["fn"
+                                                      ["element"]
+                                                      ["update"
+                                                       "element"
+                                                       ":props"
+                                                       ["fn"
+                                                        ["props"]
+                                                        ["if"
+                                                         ["some?" [":value" "op-data"]]
+                                                         ["assoc" "props" [":prop" "op-data"] [":value" "op-data"]]
+                                                         ["dissoc" "props" [":prop" "op-data"]]]]]]]]]},
                                 :procs []},
          "twig.container" {:ns ["ns"
                                 "server.twig.container"
@@ -136,7 +192,16 @@
                  :defs {"find-first" ["defn"
                                       "find-first"
                                       ["f" "xs"]
-                                      ["reduce" ["fn" ["_" "x"] ["when" ["f" "x"] ["reduced" "x"]]] "nil" "xs"]]},
+                                      ["reduce" ["fn" ["_" "x"] ["when" ["f" "x"] ["reduced" "x"]]] "nil" "xs"]],
+                        "expand-tree-path" ["defn"
+                                            "expand-tree-path"
+                                            ["path"]
+                                            ["let"
+                                             [["initial-path" ["concat" ["[]" ":dom-modules" ["first" "path"] ":tree"]]]
+                                              ["children-path"
+                                               ["mapcat" ["fn" ["idx"] ["[]" ":children" "idx"]] ["drop" "2" "path"]]]
+                                              ["data-path" ["concat" "initial-path" "children-path"]]]
+                                             ["vec" "data-path"]]]},
                  :procs []},
          "schema" {:ns ["ns" "server.schema"],
                    :defs {"dom-module" ["def"
@@ -498,7 +563,18 @@
                                               "session-id"
                                               "op-id"
                                               "op-time"]]
+                                            [":dom-modules/rename-element"
+                                             ["dom-modules/rename-element"
+                                              "db"
+                                              "op-data"
+                                              "session-id"
+                                              "op-id"
+                                              "op-time"]]
                                             [":dom-modules/focus"
                                              ["dom-modules/focus" "db" "op-data" "session-id" "op-id" "op-time"]]
+                                            [":dom-modules/set-style"
+                                             ["dom-modules/set-style" "db" "op-data" "session-id" "op-id" "op-time"]]
+                                            [":dom-modules/set-prop"
+                                             ["dom-modules/set-prop" "db" "op-data" "session-id" "op-id" "op-time"]]
                                             ["do" ["println" "|Unhandled op:" ["str" "op"]] "db"]]]},
                          :procs []}}}

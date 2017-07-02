@@ -47,5 +47,7 @@
       {}
       (button
        {:inner-text "Create module", :style ui/button, :on {:click (on-create state)}})
+      (=< 8 nil)
       (button {:inner-text "Rename module", :style ui/button})
+      (=< 8 nil)
       (button {:inner-text "Delete", :style ui/button}))))))
