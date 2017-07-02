@@ -34,16 +34,15 @@
  comp-tree
  (node-tree base-path focus-path)
  (if (= :dom-module (:type node-tree))
-   (let [path [(:id node-tree)]]
-     (div
-      {}
-      (div
-       {:style (merge style-module-name (if (= path focus-path) style-focus)),
-        :on {:click (on-focus path)}}
-       (<> span (:name node-tree) nil))
-      (div
-       {:style style-children}
-       (comp-tree (:tree node-tree) (conj path :tree) focus-path))))
+   (div
+    {}
+    (div
+     {:style (merge style-module-name (if (= base-path focus-path) style-focus)),
+      :on {:click (on-focus base-path)}}
+     (<> span (:name node-tree) nil))
+    (div
+     {:style style-children}
+     (comp-tree (:tree node-tree) [(:id node-tree) :tree] focus-path)))
    (div
     {}
     (div

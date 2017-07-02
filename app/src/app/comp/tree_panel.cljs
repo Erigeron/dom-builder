@@ -38,4 +38,5 @@
      (button {:inner-text "Rename", :style ui/button, :on {:click (on-rename state)}})
      (=< 8 nil)
      (button {:inner-text "Delete", :style ui/button, :on {:click (on-delete path)}}))
-    (if (some? tree-node) (comp-tree tree-node [] (:path focus))))))
+    (=< nil 16)
+    (if (some? tree-node) (comp-tree tree-node [(:id tree-node)] path)))))

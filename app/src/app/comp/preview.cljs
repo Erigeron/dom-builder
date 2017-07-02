@@ -9,12 +9,19 @@
             [app.style.layout :as layout]))
 
 (def style-preview
-  (merge {:background-color (hsl 0 0 90), :padding 8, :color colors/texture, :overflow :auto}))
+  (merge {:background-color (hsl 0 0 90), :color colors/texture, :overflow :auto}))
 
-(defn render-element [tree focused-path path]
-  (if (some? tree)
+(defn render-element [tree focused-path dom-modules path level]
+  (if (and (some? tree) (< level 20))
     (if (= :dom-module (:type tree))
-      (recur (:tree tree) focused-path (conj path :tree))
+      (let [nested-module (get dom-modules (:id tree))]
+        (println "get modules" nested-module)
+        (recur
+         (:tree nested-module)
+         focused-path
+         dom-modules
+         [(:id tree) :tree]
+         (inc level)))
       (create-element
        (:name tree)
        (merge
@@ -22,7 +29,9 @@
         {:style (merge (:style tree) (if (= focused-path path) {:outline "4px solid blue"}))})
        (->> (:children tree)
             (map-indexed
-             (fn [idx child] [idx (render-element child focused-path (conj path idx))])))))
+             (fn [idx child]
+               [idx
+                (render-element child focused-path dom-modules (conj path idx) (inc level))])))))
     nil))
 
 (def style-close
@@ -39,8 +48,10 @@
 
 (defcomp
  comp-preview
- (tree path)
+ (tree dom-modules path)
  (div
-  {:style (merge ui/center style-preview)}
+  {:style (merge ui/center ui/fullscreen style-preview)}
   (div {:style style-close, :on {:click on-close}} (<> span "Close" nil))
-  (if (some? tree) (render-element tree path [(first path)]) (<> span "nothing" nil))))
+  (if (some? tree)
+    (render-element (:tree tree) path dom-modules [(first path) :tree] 0)
+    (<> span "nothing" nil))))

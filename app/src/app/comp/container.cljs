@@ -23,22 +23,22 @@
 (defcomp
  comp-container
  (states store)
- (let [state (:data states), session (:session store)]
+ (let [state (:data states), session (:session store), dom-modules (:dom-modules store)]
    (if (nil? store)
      (div
       {:style (merge ui/global ui/fullscreen ui/center)}
       (<> span "No connection!" style-alert))
      (if (= :preview (get-in store [:router :name]))
        (let [module-id (get-in session [:focus :module])
-             dom-module (get-in store [:dom-modules module-id])]
-         (comp-preview dom-module (-> session :session :path)))
+             dom-module (get dom-modules module-id)]
+         (comp-preview dom-module dom-modules (-> session :session :path)))
        (div
         {:style (merge ui/global ui/fullscreen style-contaier)}
         (comp-header (:logged-in? store))
         (if (:logged-in? store)
           (let [router (:router store)]
             (case (:name router)
-              :home (comp-editor states (:dom-modules store) (:focus session))
+              :home (comp-editor states dom-modules (:focus session))
               :profile (comp-profile (:user store))
               (div {} (<> span (str "404 page: " (pr-str router)) nil))))
           (comp-login states))

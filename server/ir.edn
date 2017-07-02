@@ -12,26 +12,7 @@
                                      [":require"
                                       ["[]" "server.schema" ":as" "schema"]
                                       ["[]" "server.util" ":refer" ["[]" "expand-tree-path"]]]],
-                                :defs {"create" ["defn"
-                                                 "create"
-                                                 ["db" "op-data" "session-id" "op-id" "op-time"]
-                                                 ["let"
-                                                  [["new-module"
-                                                    ["merge"
-                                                     "schema/dom-module"
-                                                     ["{}"
-                                                      [":id" "op-id"]
-                                                      [":name" "op-data"]
-                                                      [":tree" ["merge" "schema/element" ["{}" [":name" ":div"]]]]]]]]
-                                                  ["assoc-in" "db" ["[]" ":dom-modules" "op-id"] "new-module"]]],
-                                       "choose" ["defn"
-                                                 "choose"
-                                                 ["db" "op-data" "session-id" "op-id" "op-time"]
-                                                 ["assoc-in"
-                                                  "db"
-                                                  ["[]" ":sessions" "session-id" ":focus" ":module"]
-                                                  "op-data"]],
-                                       "append-element" ["defn"
+                                :defs {"append-element" ["defn"
                                                          "append-element"
                                                          ["db" "op-data" "session-id" "op-id" "op-time"]
                                                          ["let"
@@ -62,13 +43,6 @@
                                                                   ["merge"
                                                                    "schema/element"
                                                                    ["{}" [":name" ["keyword" "op-data"]]]]]]]]]]]]]],
-                                       "focus" ["defn"
-                                                "focus"
-                                                ["db" "op-data" "session-id" "op-id" "op-time"]
-                                                ["assoc-in"
-                                                 "db"
-                                                 ["[]" ":sessions" "session-id" ":focus" ":path"]
-                                                 "op-data"]],
                                        "delete-element" ["defn"
                                                          "delete-element"
                                                          ["db" "op-data" "session-id" "op-id" "op-time"]
@@ -131,6 +105,61 @@
                                                           ["some?" [":value" "op-data"]]
                                                           ["assoc" "style" [":prop" "op-data"] [":value" "op-data"]]
                                                           ["dissoc" "style" [":prop" "op-data"]]]]]]]]],
+                                       "focus" ["defn"
+                                                "focus"
+                                                ["db" "op-data" "session-id" "op-id" "op-time"]
+                                                ["assoc-in"
+                                                 "db"
+                                                 ["[]" ":sessions" "session-id" ":focus" ":path"]
+                                                 "op-data"]],
+                                       "choose" ["defn"
+                                                 "choose"
+                                                 ["db" "op-data" "session-id" "op-id" "op-time"]
+                                                 ["assoc-in"
+                                                  "db"
+                                                  ["[]" ":sessions" "session-id" ":focus" ":module"]
+                                                  "op-data"]],
+                                       "insert-module" ["defn"
+                                                        "insert-module"
+                                                        ["db" "op-data" "session-id" "op-id" "op-time"]
+                                                        ["let"
+                                                         [["path"
+                                                           ["get-in"
+                                                            "db"
+                                                            ["[]" ":sessions" "session-id" ":focus" ":path"]]]
+                                                          ["nested-module"
+                                                           ["get-in" "db" ["[]" ":dom-modules" "op-data"]]]]
+                                                         ["if"
+                                                          ["<" ["count" "path"] "2"]
+                                                          ["do"
+                                                           [".warn" "js/console" "|Invalid path:" ["clj->js" "path"]]
+                                                           "db"]
+                                                          ["let"
+                                                           [["data-path" ["expand-tree-path" "path"]]]
+                                                           ["->"
+                                                            "db"
+                                                            ["update-in"
+                                                             "data-path"
+                                                             ["fn"
+                                                              ["element"]
+                                                              ["update"
+                                                               "element"
+                                                               ":children"
+                                                               ["fn"
+                                                                ["children"]
+                                                                ["conj" "children" ["dissoc" "nested-module" ":tree"]]]]]]]]]]],
+                                       "create" ["defn"
+                                                 "create"
+                                                 ["db" "op-data" "session-id" "op-id" "op-time"]
+                                                 ["let"
+                                                  [["new-module"
+                                                    ["merge"
+                                                     "schema/dom-module"
+                                                     ["{}"
+                                                      [":id" "op-id"]
+                                                      [":name" "op-data"]
+                                                      [":tree" ["merge" "schema/element" ["{}" [":name" ":div"]]]]]]]]
+                                                  ["assoc-in" "db" ["[]" ":dom-modules" "op-id"] "new-module"]]],
                                        "set-prop" ["defn"
                                                    "set-prop"
                                                    ["db" "op-data" "session-id" "op-id" "op-time"]
@@ -150,7 +179,19 @@
                                                         ["if"
                                                          ["some?" [":value" "op-data"]]
                                                          ["assoc" "props" [":prop" "op-data"] [":value" "op-data"]]
-                                                         ["dissoc" "props" [":prop" "op-data"]]]]]]]]]},
+                                                         ["dissoc" "props" [":prop" "op-data"]]]]]]]]],
+                                       "delete-module" ["defn"
+                                                        "delete-module"
+                                                        ["db" "op-data" "session-id" "op-id" "op-time"]
+                                                        ["let"
+                                                         [["module-id"
+                                                           ["get-in"
+                                                            "db"
+                                                            ["[]" ":sessions" "session-id" ":focus" ":module"]]]]
+                                                         ["update"
+                                                          "db"
+                                                          ":dom-modules"
+                                                          ["fn" ["dom-modules"] ["dissoc" "dom-modules" "module-id"]]]]]},
                                 :procs []},
          "twig.container" {:ns ["ns"
                                 "server.twig.container"
@@ -576,5 +617,9 @@
                                              ["dom-modules/set-style" "db" "op-data" "session-id" "op-id" "op-time"]]
                                             [":dom-modules/set-prop"
                                              ["dom-modules/set-prop" "db" "op-data" "session-id" "op-id" "op-time"]]
+                                            [":dom-modules/insert-module"
+                                             ["dom-modules/insert-module" "db" "op-data" "session-id" "op-id" "op-time"]]
+                                            [":dom-modules/delete-module"
+                                             ["dom-modules/delete-module" "db" "op-data" "session-id" "op-id" "op-time"]]
                                             ["do" ["println" "|Unhandled op:" ["str" "op"]] "db"]]]},
                          :procs []}}}

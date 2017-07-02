@@ -26,4 +26,8 @@
     :dom-modules/focus (dom-modules/focus db op-data session-id op-id op-time)
     :dom-modules/set-style (dom-modules/set-style db op-data session-id op-id op-time)
     :dom-modules/set-prop (dom-modules/set-prop db op-data session-id op-id op-time)
+    :dom-modules/insert-module
+      (dom-modules/insert-module db op-data session-id op-id op-time)
+    :dom-modules/delete-module
+      (dom-modules/delete-module db op-data session-id op-id op-time)
     (do (println "Unhandled op:" (str op)) db)))

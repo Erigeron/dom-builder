@@ -53,21 +53,22 @@
                                           ["node-tree" "base-path" "focus-path"]
                                           ["if"
                                            ["=" ":dom-module" [":type" "node-tree"]]
-                                           ["let"
-                                            [["path" ["[]" [":id" "node-tree"]]]]
+                                           ["div"
+                                            ["{}"]
                                             ["div"
-                                             ["{}"]
-                                             ["div"
-                                              ["{}"
-                                               [":style"
-                                                ["merge"
-                                                 "style-module-name"
-                                                 ["if" ["=" "path" "focus-path"] "style-focus"]]]
-                                               [":on" ["{}" [":click" ["on-focus" "path"]]]]]
-                                              ["<>" "span" [":name" "node-tree"] "nil"]]
-                                             ["div"
-                                              ["{}" [":style" "style-children"]]
-                                              ["comp-tree" [":tree" "node-tree"] ["conj" "path" ":tree"] "focus-path"]]]]
+                                             ["{}"
+                                              [":style"
+                                               ["merge"
+                                                "style-module-name"
+                                                ["if" ["=" "base-path" "focus-path"] "style-focus"]]]
+                                              [":on" ["{}" [":click" ["on-focus" "base-path"]]]]]
+                                             ["<>" "span" [":name" "node-tree"] "nil"]]
+                                            ["div"
+                                             ["{}" [":style" "style-children"]]
+                                             ["comp-tree"
+                                              [":tree" "node-tree"]
+                                              ["[]" [":id" "node-tree"] ":tree"]
+                                              "focus-path"]]]
                                            ["div"
                                             ["{}"]
                                             ["div"
@@ -130,32 +131,44 @@
                                ["[]" "app.style.layout" ":as" "layout"]]],
                          :defs {"comp-preview" ["defcomp"
                                                 "comp-preview"
-                                                ["tree" "path"]
+                                                ["tree" "dom-modules" "path"]
                                                 ["div"
-                                                 ["{}" [":style" ["merge" "ui/center" "style-preview"]]]
+                                                 ["{}" [":style" ["merge" "ui/center" "ui/fullscreen" "style-preview"]]]
                                                  ["div"
                                                   ["{}" [":style" "style-close"] [":on" ["{}" [":click" "on-close"]]]]
                                                   ["<>" "span" "|Close" "nil"]]
                                                  ["if"
                                                   ["some?" "tree"]
-                                                  ["render-element" "tree" "path" ["[]" ["first" "path"]]]
+                                                  ["render-element"
+                                                   [":tree" "tree"]
+                                                   "path"
+                                                   "dom-modules"
+                                                   ["[]" ["first" "path"] ":tree"]
+                                                   "0"]
                                                   ["<>" "span" "|nothing" "nil"]]]],
                                 "style-preview" ["def"
                                                  "style-preview"
                                                  ["merge"
                                                   ["{}"
                                                    [":background-color" ["hsl" "0" "0" "90"]]
-                                                   [":padding" "8"]
                                                    [":color" "colors/texture"]
                                                    [":overflow" ":auto"]]]],
                                 "render-element" ["defn"
                                                   "render-element"
-                                                  ["tree" "focused-path" "path"]
+                                                  ["tree" "focused-path" "dom-modules" "path" "level"]
                                                   ["if"
-                                                   ["some?" "tree"]
+                                                   ["and" ["some?" "tree"] ["<" "level" "20"]]
                                                    ["if"
                                                     ["=" ":dom-module" [":type" "tree"]]
-                                                    ["recur" [":tree" "tree"] "focused-path" ["conj" "path" ":tree"]]
+                                                    ["let"
+                                                     [["nested-module" ["get" "dom-modules" [":id" "tree"]]]]
+                                                     ["println" "|get modules" "nested-module"]
+                                                     ["recur"
+                                                      [":tree" "nested-module"]
+                                                      "focused-path"
+                                                      "dom-modules"
+                                                      ["[]" [":id" "tree"] ":tree"]
+                                                      ["inc" "level"]]]
                                                     ["create-element"
                                                      [":name" "tree"]
                                                      ["merge"
@@ -174,7 +187,12 @@
                                                         ["idx" "child"]
                                                         ["[]"
                                                          "idx"
-                                                         ["render-element" "child" "focused-path" ["conj" "path" "idx"]]]]]]]]
+                                                         ["render-element"
+                                                          "child"
+                                                          "focused-path"
+                                                          "dom-modules"
+                                                          ["conj" "path" "idx"]
+                                                          ["inc" "level"]]]]]]]]
                                                    "nil"]],
                                 "style-close" ["def"
                                                "style-close"
@@ -339,7 +357,9 @@
                                                     "comp-container"
                                                     ["states" "store"]
                                                     ["let"
-                                                     [["state" [":data" "states"]] ["session" [":session" "store"]]]
+                                                     [["state" [":data" "states"]]
+                                                      ["session" [":session" "store"]]
+                                                      ["dom-modules" [":dom-modules" "store"]]]
                                                      ["if"
                                                       ["nil?" "store"]
                                                       ["div"
@@ -350,10 +370,10 @@
                                                        ["=" ":preview" ["get-in" "store" ["[]" ":router" ":name"]]]
                                                        ["let"
                                                         [["module-id" ["get-in" "session" ["[]" ":focus" ":module"]]]
-                                                         ["dom-module"
-                                                          ["get-in" "store" ["[]" ":dom-modules" "module-id"]]]]
+                                                         ["dom-module" ["get" "dom-modules" "module-id"]]]
                                                         ["comp-preview"
                                                          "dom-module"
+                                                         "dom-modules"
                                                          ["->" "session" ":session" ":path"]]]
                                                        ["div"
                                                         ["{}"
@@ -367,10 +387,7 @@
                                                           ["case"
                                                            [":name" "router"]
                                                            [":home"
-                                                            ["comp-editor"
-                                                             "states"
-                                                             [":dom-modules" "store"]
-                                                             [":focus" "session"]]]
+                                                            ["comp-editor" "states" "dom-modules" [":focus" "session"]]]
                                                            [":profile" ["comp-profile" [":user" "store"]]]
                                                            ["div"
                                                             ["{}"]
@@ -743,9 +760,10 @@
                                                            [":inner-text" "|Delete"]
                                                            [":style" "ui/button"]
                                                            [":on" ["{}" [":click" ["on-delete" "path"]]]]]]]
+                                                        ["=<" "nil" "16"]
                                                         ["if"
                                                          ["some?" "tree-node"]
-                                                         ["comp-tree" "tree-node" ["[]"] [":path" "focus"]]]]]],
+                                                         ["comp-tree" "tree-node" ["[]" [":id" "tree-node"]] "path"]]]]],
                                    "style-panel" ["def" "style-panel" ["{}" [":overflow" ":auto"]]],
                                    "on-delete" ["defn"
                                                 "on-delete"
@@ -839,9 +857,26 @@
                                    ["[]" "respo.core" ":refer" ["[]" "create-comp"]]
                                    ["[]" "respo.comp.space" ":refer" ["[]" "=<"]]
                                    ["[]" "app.style.layout" ":as" "layout"]]],
-                             :defs {"comp-dom-modules" ["defcomp"
+                             :defs {"style-insert" ["def"
+                                                    "style-insert"
+                                                    ["{}"
+                                                     [":text-decoration" ":underline"]
+                                                     [":font-size" "12"]
+                                                     [":vertical-align" ":middle"]
+                                                     [":color" ["hsl" "240" "50" "70"]]
+                                                     [":cursor" ":pointer"]]],
+                                    "on-input" ["defn" "on-input" ["e" "d!" "m!"] ["m!" [":value" "e"]]],
+                                    "on-choose" ["defn"
+                                                 "on-choose"
+                                                 ["module-id"]
+                                                 ["fn" ["e" "d!" "m!"] ["d!" ":dom-modules/choose" "module-id"]]],
+                                    "on-insert" ["defn"
+                                                 "on-insert"
+                                                 ["module-id"]
+                                                 ["fn" ["e" "d!" "m!"] ["d!" ":dom-modules/insert-module" "module-id"]]],
+                                    "comp-dom-modules" ["defcomp"
                                                         "comp-dom-modules"
-                                                        ["states" "dom-modules"]
+                                                        ["states" "dom-modules" "focus"]
                                                         ["let"
                                                          [["state" ["or" [":data" "states"] "|"]]]
                                                          ["div"
@@ -859,15 +894,26 @@
                                                             ["map"
                                                              ["fn"
                                                               ["entry"]
-                                                              ["[]"
-                                                               ["key" "entry"]
-                                                               ["let"
-                                                                [["m" ["val" "entry"]]]
+                                                              ["let"
+                                                               [[["[]" "k" "m"] "entry"]]
+                                                               ["[]"
+                                                                "k"
                                                                 ["div"
                                                                  ["{}"
-                                                                  [":inner-text" [":name" "m"]]
-                                                                  [":style" "style-entry"]
-                                                                  [":on" ["{}" [":click" ["on-choose" [":id" "m"]]]]]]]]]]]]]
+                                                                  [":style"
+                                                                   ["merge"
+                                                                    "style-entry"
+                                                                    ["if"
+                                                                     ["=" "k" [":module" "focus"]]
+                                                                     "style-highlight"]]]
+                                                                  [":on" ["{}" [":click" ["on-choose" [":id" "m"]]]]]]
+                                                                 ["<>" "span" [":name" "m"] "nil"]
+                                                                 ["=<" "8" "nil"]
+                                                                 ["span"
+                                                                  ["{}"
+                                                                   [":inner-text" "|insert"]
+                                                                   [":style" "style-insert"]
+                                                                   [":on" ["{}" [":click" ["on-insert" "k"]]]]]]]]]]]]]
                                                           ["div"
                                                            ["{}" [":style" [":control" "layout/modules-panel"]]]
                                                            ["div"
@@ -892,13 +938,23 @@
                                                               [":style" "ui/button"]]]
                                                             ["=<" "8" "nil"]
                                                             ["button"
-                                                             ["{}" [":inner-text" "|Delete"] [":style" "ui/button"]]]]]]]],
+                                                             ["{}"
+                                                              [":inner-text" "|Delete"]
+                                                              [":style" "ui/button"]
+                                                              [":on" ["{}" [":click" "on-delete"]]]]]]]]]],
                                     "style-list" ["def"
                                                   "style-list"
                                                   ["{}"
                                                    [":background-color" ["hsl" "0" "0" "90"]]
                                                    [":overflow" ":auto"]]],
-                                    "on-input" ["defn" "on-input" ["e" "d!" "m!"] ["m!" [":value" "e"]]],
+                                    "style-highlight" ["def" "style-highlight" ["{}" [":font-weight" ":bold"]]],
+                                    "on-delete" ["defn"
+                                                 "on-delete"
+                                                 ["e" "d!" "m!"]
+                                                 ["d!" ":dom-modules/delete-module" "nil"]],
+                                    "style-entry" ["def"
+                                                   "style-entry"
+                                                   ["{}" [":padding" "|0 8px"] [":cursor" ":pointer"]]],
                                     "on-create" ["defn"
                                                  "on-create"
                                                  ["text"]
@@ -906,14 +962,7 @@
                                                   ["e" "d!" "m!"]
                                                   ["if"
                                                    ["not" ["string/blank?" "text"]]
-                                                   ["do" ["d!" ":dom-modules/create" "text"] ["m!" "|"]]]]],
-                                    "on-choose" ["defn"
-                                                 "on-choose"
-                                                 ["module-id"]
-                                                 ["fn" ["e" "d!" "m!"] ["d!" ":dom-modules/choose" "module-id"]]],
-                                    "style-entry" ["def"
-                                                   "style-entry"
-                                                   ["{}" [":padding" "|0 8px"] [":cursor" ":pointer"]]]},
+                                                   ["do" ["d!" ":dom-modules/create" "text"] ["m!" "|"]]]]]},
                              :procs []},
          "style.layout" {:ns ["ns" "app.style.layout"],
                          :defs {"workspace" ["def"
@@ -949,12 +998,12 @@
                                             ["{}"
                                              [":display" ":grid"]
                                              [":grid-template-columns" "|repeat(6,1fr)"]
-                                             [":grid-template-rows" "|repeat(2,25%)"]
+                                             [":grid-template-rows" "|repeat(2,1fr)"]
                                              [":grid-gap" "|8px"]
                                              [":justify-items" ":stretch"]
                                              [":align-items" ":stretch"]]]
                                            [":modules" ["{}" [":grid-area" "|1/1/span 2/span 1"]]]
-                                           [":tree" ["{}" [":grid-area" "|1/2/span 2/span 3"]]]
+                                           [":tree" ["{}" [":grid-area" "|1/2/span 2/span 2"]]]
                                            [":props" ["{}" [":grid-area" "|1/5/span 1/span 2"]]]
                                            [":style" ["{}" [":grid-area" "|2/5/span 1/span 2"]]]]],
                                 "modules-panel" ["def"
@@ -965,9 +1014,9 @@
                                                     [":display" ":grid"]
                                                     [":justify-items" ":stretch"]
                                                     [":align-items" ":stretch"]
-                                                    [":grid-template-rows" "|1fr"]
-                                                    [":grid-template-columns" "|1fr 1fr"]
+                                                    [":grid-template-rows" "|1fr 1fr"]
+                                                    [":grid-template-columns" "|1fr"]
                                                     [":grid-gap" "|8px"]]]
                                                   [":list" ["{}" [":grid-area" "|1/1"]]]
-                                                  [":control" ["{}" [":grid-area" "|1/2"]]]]]},
+                                                  [":control" ["{}" [":grid-area" "|2/1"]]]]]},
                          :procs []}}}
