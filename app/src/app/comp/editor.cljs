@@ -13,7 +13,8 @@
             [app.comp.style :refer [comp-style]]
             [app.comp.dom-modules :refer [comp-dom-modules]]))
 
-(def style-editor (merge (:grid layout/editor) {:padding "0 16px"}))
+(def style-editor
+  (merge (:grid layout/editor) (:body layout/workspace) {:padding "0 16px"}))
 
 (defcomp
  comp-editor

@@ -309,7 +309,10 @@
                                                  [":path" "focus"]]]]],
                                "style-editor" ["def"
                                                "style-editor"
-                                               ["merge" [":grid" "layout/editor"] ["{}" [":padding" "|0 16px"]]]]},
+                                               ["merge"
+                                                [":grid" "layout/editor"]
+                                                [":body" "layout/workspace"]
+                                                ["{}" [":padding" "|0 16px"]]]]},
                         :procs []},
          "comp.props" {:ns ["ns"
                             "app.comp.props"
@@ -322,7 +325,8 @@
                              ["[]" "respo-ui.style.colors" ":as" "colors"]
                              ["[]" "respo.core" ":refer" ["[]" "create-comp"]]
                              ["[]" "respo.comp.space" ":refer" ["[]" "=<"]]
-                             ["[]" "app.style.layout" ":as" "layout"]]],
+                             ["[]" "app.style.layout" ":as" "layout"]
+                             ["[]" "app.style" ":as" "style"]]],
                        :defs {"comp-props" ["defcomp"
                                             "comp-props"
                                             ["states" "props" "path"]
@@ -330,6 +334,7 @@
                                              [["state" ["or" [":data" "states"] "|"]]]
                                              ["div"
                                               ["{}" [":style" [":props" "layout/editor"]]]
+                                              ["<>" "span" "|Props" "style/title"]
                                               ["div"
                                                ["{}"]
                                                ["->>"
@@ -475,7 +480,10 @@
                                    [":font-weight" "300"]
                                    [":cursor" ":pointer"]
                                    [":outline" ":none"]
-                                   [":color" ["hsl" "240" "90" "60"]]]]},
+                                   [":color" ["hsl" "240" "90" "60"]]]],
+                         "title" ["def"
+                                  "title"
+                                  ["{}" [":font-family" "|Josefin Sans"] [":font-size" "32"] [":font-weight" "100"]]]},
                   :procs []},
          "main" {:ns ["ns"
                       "app.main"
@@ -904,6 +912,7 @@
                                                        ["div"
                                                         ["{}"
                                                          [":style" ["merge" [":tree" "layout/editor"] "style-panel"]]]
+                                                        ["<>" "span" "|Tree" "style/title"]
                                                         ["div" ["{}"] ["<>" "code" "path" "nil"]]
                                                         ["render-operations" "state" "path"]
                                                         ["=<" "nil" "8"]
@@ -917,13 +926,10 @@
                                                 ["el-name"]
                                                 ["fn"
                                                  ["e" "d!" "m!"]
-                                                 ["if"
-                                                  ["not" ["string/blank?" "el-name"]]
-                                                  ["do"
-                                                   ["d!"
-                                                    ":dom-modules/append-element"
-                                                    ["if" ["string/blank?" "el-name"] "|div" "el-name"]]
-                                                   ["m!" "|"]]]]],
+                                                 ["d!"
+                                                  ":dom-modules/append-element"
+                                                  ["if" ["string/blank?" "el-name"] "|div" "el-name"]]
+                                                 ["m!" "|"]]],
                                    "on-rename" ["defn"
                                                 "on-rename"
                                                 ["text"]
@@ -948,7 +954,8 @@
                              ["[]" "respo-ui.style.colors" ":as" "colors"]
                              ["[]" "respo.core" ":refer" ["[]" "create-comp"]]
                              ["[]" "respo.comp.space" ":refer" ["[]" "=<"]]
-                             ["[]" "app.style.layout" ":as" "layout"]]],
+                             ["[]" "app.style.layout" ":as" "layout"]
+                             ["[]" "app.style" ":as" "style"]]],
                        :defs {"comp-style" ["defcomp"
                                             "comp-style"
                                             ["states" "style-map" "path"]
@@ -956,6 +963,7 @@
                                              [["state" ["or" [":data" "states"] "|"]]]
                                              ["div"
                                               ["{}" [":style" [":style" "layout/editor"]]]
+                                              ["<>" "span" "|Style" "style/title"]
                                               ["div"
                                                ["{}"]
                                                ["->>"
@@ -1041,6 +1049,7 @@
                                                          [["state" ["or" [":data" "states"] "|"]]]
                                                          ["div"
                                                           ["{}" [":style" ["merge" [":modules" "layout/editor"]]]]
+                                                          ["<>" "span" "|Modules" "style/title"]
                                                           ["render-module-list" "dom-modules" "focus"]
                                                           ["=<" "nil" "8"]
                                                           ["div"
@@ -1158,7 +1167,7 @@
                                              [":justify-items" ":stretch"]
                                              [":align-items" ":stretch"]]]
                                            [":modules" ["{}" [":grid-area" "|1/1/span 2/span 1"]]]
-                                           [":tree" ["{}" [":grid-area" "|1/2/span 2/span 2"]]]
+                                           [":tree" ["{}" [":grid-area" "|1/2/span 2/span 3"]]]
                                            [":props" ["{}" [":grid-area" "|1/5/span 1/span 2"]]]
                                            [":style" ["{}" [":grid-area" "|2/5/span 1/span 2"]]]]]},
                          :procs []}}}

@@ -9,3 +9,5 @@
    :cursor :pointer,
    :outline :none,
    :color (hsl 240 90 60)})
+
+(def title {:font-family "Josefin Sans", :font-size 32, :font-weight 100})

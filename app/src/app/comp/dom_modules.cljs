@@ -48,6 +48,7 @@
  (let [state (or (:data states) "")]
    (div
     {:style (merge (:modules layout/editor))}
+    (<> span "Modules" style/title)
     (render-module-list dom-modules focus)
     (=< nil 8)
     (div

@@ -29,6 +29,6 @@
           :justify-items :stretch,
           :align-items :stretch},
    :modules {:grid-area "1/1/span 2/span 1"},
-   :tree {:grid-area "1/2/span 2/span 2"},
+   :tree {:grid-area "1/2/span 2/span 3"},
    :props {:grid-area "1/5/span 1/span 2"},
    :style {:grid-area "2/5/span 1/span 2"}})

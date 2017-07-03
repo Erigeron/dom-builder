@@ -20,8 +20,8 @@
 
 (defn on-append [el-name]
   (fn [e d! m!]
-    (if (not (string/blank? el-name))
-      (do (d! :dom-modules/append-element (if (string/blank? el-name) "div" el-name)) (m! "")))))
+    (d! :dom-modules/append-element (if (string/blank? el-name) "div" el-name))
+    (m! "")))
 
 (defn on-rename [text]
   (fn [e d! m!]
@@ -58,6 +58,7 @@
        path (:path focus)]
    (div
     {:style (merge (:tree layout/editor) style-panel)}
+    (<> span "Tree" style/title)
     (div {} (<> code path nil))
     (render-operations state path)
     (=< nil 8)

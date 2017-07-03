@@ -7,7 +7,8 @@
             [respo-ui.style.colors :as colors]
             [respo.core :refer [create-comp]]
             [respo.comp.space :refer [=<]]
-            [app.style.layout :as layout]))
+            [app.style.layout :as layout]
+            [app.style :as style]))
 
 (defn on-input [e d! m!] (m! (:value e)))
 
@@ -28,6 +29,7 @@
  (let [state (or (:data states) "")]
    (div
     {:style (:props layout/editor)}
+    (<> span "Props" style/title)
     (div
      {}
      (->> props
