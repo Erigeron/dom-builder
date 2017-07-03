@@ -31,7 +31,12 @@
      (if (= :preview (get-in store [:router :name]))
        (let [module-id (get-in session [:focus :module])
              dom-module (get dom-modules module-id)]
-         (comp-preview dom-module dom-modules (-> session :session :path)))
+         (println "session" session)
+         (comp-preview
+          dom-module
+          dom-modules
+          (get-in session [:focus :module])
+          (:focuses store)))
        (div
         {:style (merge ui/global ui/fullscreen style-contaier)}
         (comp-header (:logged-in? store))

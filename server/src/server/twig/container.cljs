@@ -12,9 +12,8 @@
           :logged-in? true,
           :user (get-in db [:users (:user-id session)]),
           :focuses (->> (:sessions db)
-                        (map (fn [entry] (let [s (val entry)] [(:user-id s) (:focus s)])))
+                        (map (fn [entry] (let [s (val entry)] [(key entry) (:focus s)])))
                         (into {})),
           :dom-modules (:dom-modules db),
-          :router router,
-          :statistics {}}
+          :router router}
          {:session session, :logged-in? false})))))

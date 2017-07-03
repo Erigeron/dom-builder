@@ -26,9 +26,22 @@
 
 (def style-highlight {:font-weight :bold})
 
-(defn on-delete [e d! m!] (d! :dom-modules/delete-module nil))
-
 (def style-entry {:padding "0 8px", :cursor :pointer})
+
+(defn render-module-list [dom-modules focus]
+  (->> dom-modules
+       (map
+        (fn [entry]
+          (let [[k m] entry]
+            [k
+             (div
+              {:style (merge style-entry (if (= k (:module focus)) style-highlight)),
+               :on {:click (on-choose (:id m))}}
+              (<> span (:name m) nil)
+              (=< 8 nil)
+              (span {:inner-text "insert", :style style-insert, :on {:click (on-insert k)}}))])))))
+
+(defn on-delete [e d! m!] (d! :dom-modules/delete-module nil))
 
 (defn on-create [text]
   (fn [e d! m!] (if (not (string/blank? text)) (do (d! :dom-modules/create text) (m! "")))))
@@ -41,18 +54,7 @@
     {:style (merge (:grid layout/modules-panel) (:modules layout/editor))}
     (div
      {:style (merge (:list layout/modules-panel) style-list)}
-     (->> dom-modules
-          (map
-           (fn [entry]
-             (let [[k m] entry]
-               [k
-                (div
-                 {:style (merge style-entry (if (= k (:module focus)) style-highlight)),
-                  :on {:click (on-choose (:id m))}}
-                 (<> span (:name m) nil)
-                 (=< 8 nil)
-                 (span
-                  {:inner-text "insert", :style style-insert, :on {:click (on-insert k)}}))])))))
+     (render-module-list dom-modules focus))
     (div
      {:style (:control layout/modules-panel)}
      (div
@@ -61,9 +63,8 @@
        {:value state, :placeholder "module name", :style ui/input, :on {:input on-input}}))
      (div
       {}
-      (button
-       {:inner-text "Create module", :style ui/button, :on {:click (on-create state)}})
+      (button {:inner-text "Create", :style ui/button, :on {:click (on-create state)}})
       (=< 8 nil)
-      (button {:inner-text "Rename module", :style ui/button})
+      (button {:inner-text "Rename", :style ui/button})
       (=< 8 nil)
       (button {:inner-text "Delete", :style ui/button, :on {:click on-delete}}))))))

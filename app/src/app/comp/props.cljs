@@ -18,6 +18,10 @@
         (d! :dom-modules/set-prop {:prop (keyword k), :value (if (string/blank? v) nil v)})
         (m! "")))))
 
+(def style-line {:cursor :pointer, :font-family "Menlo, monospace"})
+
+(defn on-click [k v] (fn [e d! m!] (m! (str (name k) ": " v))))
+
 (defcomp
  comp-props
  (states props path)
@@ -30,11 +34,16 @@
           (map
            (fn [entry]
              (let [[k v] entry]
-               [k (div {} (<> span (str (name k) ":") nil) (=< 8 nil) (<> span v nil))])))))
+               [k
+                (div
+                 {:style style-line, :on {:click (on-click k v)}}
+                 (<> span (str (name k) ":") nil)
+                 (=< 8 nil)
+                 (<> span v nil))])))))
     (div
      {}
      (input
-      {:placeholder "key: value",
+      {:placeholder "prop: value",
        :value state,
        :style ui/input,
        :on {:input on-input, :keydown (on-keydown state)}})))))

@@ -108,17 +108,16 @@
                                        "focus" ["defn"
                                                 "focus"
                                                 ["db" "op-data" "session-id" "op-id" "op-time"]
-                                                ["assoc-in"
+                                                ["->"
                                                  "db"
-                                                 ["[]" ":sessions" "session-id" ":focus" ":path"]
-                                                 "op-data"]],
+                                                 ["assoc-in" ["[]" ":sessions" "session-id" ":focus" ":path"] "op-data"]]],
                                        "choose" ["defn"
                                                  "choose"
                                                  ["db" "op-data" "session-id" "op-id" "op-time"]
                                                  ["assoc-in"
                                                   "db"
-                                                  ["[]" ":sessions" "session-id" ":focus" ":module"]
-                                                  "op-data"]],
+                                                  ["[]" ":sessions" "session-id" ":focus"]
+                                                  ["{}" [":path" ["[]" "op-data"]] [":module" "op-data"]]]],
                                        "insert-module" ["defn"
                                                         "insert-module"
                                                         ["db" "op-data" "session-id" "op-id" "op-time"]
@@ -222,11 +221,10 @@
                                                              ["entry"]
                                                              ["let"
                                                               [["s" ["val" "entry"]]]
-                                                              ["[]" [":user-id" "s"] [":focus" "s"]]]]]
+                                                              ["[]" ["key" "entry"] [":focus" "s"]]]]]
                                                            ["into" ["{}"]]]]
                                                          [":dom-modules" [":dom-modules" "db"]]
-                                                         [":router" "router"]
-                                                         [":statistics" ["{}"]]]
+                                                         [":router" "router"]]
                                                         ["{}" [":session" "session"] [":logged-in?" "false"]]]]]]]},
                            :procs []},
          "util" {:ns ["ns" "server.util"],
@@ -250,7 +248,7 @@
                                         ["{}" [":type" ":dom-module"] [":name" "|empty"] [":id" "nil"] [":tree" "nil"]]],
                           "configs" ["def"
                                      "configs"
-                                     ["{}" [":storage-key" "|/data/cumulo/workflow-storage.edn"] [":port" "5021"]]],
+                                     ["{}" [":storage-key" "|/data/cumulo/dom-builder.edn"] [":port" "5021"]]],
                           "user" ["def"
                                   "user"
                                   ["{}"

@@ -3,7 +3,7 @@
 
 (def dom-module {:type :dom-module, :name "empty", :id nil, :tree nil})
 
-(def configs {:storage-key "/data/cumulo/workflow-storage.edn", :port 5021})
+(def configs {:storage-key "/data/cumulo/dom-builder.edn", :port 5021})
 
 (def user
   {:name nil,

@@ -53,10 +53,10 @@
             (dissoc style (:prop op-data)))))))))
 
 (defn focus [db op-data session-id op-id op-time]
-  (assoc-in db [:sessions session-id :focus :path] op-data))
+  (-> db (assoc-in [:sessions session-id :focus :path] op-data)))
 
 (defn choose [db op-data session-id op-id op-time]
-  (assoc-in db [:sessions session-id :focus :module] op-data))
+  (assoc-in db [:sessions session-id :focus] {:path [op-data], :module op-data}))
 
 (defn insert-module [db op-data session-id op-id op-time]
   (let [path (get-in db [:sessions session-id :focus :path])

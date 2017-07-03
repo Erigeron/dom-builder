@@ -21,6 +21,10 @@
           {:prop (keyword k), :value (if (string/blank? v) nil v)})
          (m! ""))))))
 
+(def style-line {:cursor :pointer, :font-family "Menlo, monospace"})
+
+(defn on-click [k v] (fn [e d! m!] (m! (str (name k) ": " v))))
+
 (defcomp
  comp-style
  (states style-map path)
@@ -33,11 +37,16 @@
           (map
            (fn [entry]
              (let [[k v] entry]
-               [k (div {} (<> span (str (name k) ":") nil) (=< 8 nil) (<> span v nil))])))))
+               [k
+                (div
+                 {:style style-line, :on {:click (on-click k v)}}
+                 (<> span (str (name k) ":") nil)
+                 (=< 8 nil)
+                 (<> span v nil))])))))
     (div
      {}
      (input
       {:value state,
-       :placeholder "key: value",
+       :placeholder "prop: value",
        :style ui/input,
        :on {:input on-input, :keydown (on-keydown state)}})))))

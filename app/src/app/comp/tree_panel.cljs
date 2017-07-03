@@ -1,7 +1,8 @@
 
 (ns app.comp.tree-panel
   (:require-macros [respo.macros :refer [defcomp <> span code div a button input]])
-  (:require [hsl.core :refer [hsl]]
+  (:require [clojure.string :as string]
+            [hsl.core :refer [hsl]]
             [respo-ui.style :as ui]
             [respo-ui.style.colors :as colors]
             [respo.core :refer [create-comp]]
@@ -14,7 +15,10 @@
 
 (defn on-delete [path] (fn [e d! m!] (d! :dom-modules/delete-element path)))
 
-(defn on-append [path] (fn [e d! m!] (d! :dom-modules/append-element path)))
+(defn on-append [el-name]
+  (fn [e d! m!]
+    (d! :dom-modules/append-element (if (string/blank? el-name) "div" el-name))
+    (m! "")))
 
 (defn on-input [e d! m!] (m! (:value e)))
 
@@ -31,7 +35,11 @@
     (div {} (<> code path nil))
     (div
      {}
-     (input {:placeholder "element", :value state, :style ui/input, :on {:input on-input}})
+     (input
+      {:placeholder "Element, defaults to \"div\"",
+       :value state,
+       :style ui/input,
+       :on {:input on-input}})
      (=< 8 nil)
      (button {:inner-text "Append", :style ui/button, :on {:click (on-append state)}})
      (=< 8 nil)

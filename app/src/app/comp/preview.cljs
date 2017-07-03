@@ -11,25 +11,22 @@
 (def style-preview
   (merge {:background-color (hsl 0 0 90), :color colors/texture, :overflow :auto}))
 
-(defn render-element [tree focused-path dom-modules path level]
+(def style-highlight {:outline (str "1px dashed " (hsl 240 80 70))})
+
+(defn render-element [tree paths dom-modules path level]
   (if (and (some? tree) (< level 20))
     (if (= :dom-module (:type tree))
       (let [nested-module (get dom-modules (:id tree))]
-        (recur (:tree nested-module) focused-path dom-modules [(:id tree) :tree] (inc level)))
+        (recur (:tree nested-module) paths dom-modules [(:id tree) :tree] (inc level)))
       (create-element
        (:name tree)
        (merge
         (:props tree)
-        {:style (merge
-                 (:style tree)
-                 (do
-                  (println "compare" focused-path path)
-                  (if (= focused-path path) {:outline "4px solid blue"})))})
+        {:style (merge (:style tree) (if (contains? paths path) style-highlight))})
        (->> (:children tree)
             (map-indexed
              (fn [idx child]
-               [idx
-                (render-element child focused-path dom-modules (conj path idx) (inc level))])))))
+               [idx (render-element child paths dom-modules (conj path idx) (inc level))])))))
     nil))
 
 (def style-close
@@ -46,10 +43,11 @@
 
 (defcomp
  comp-preview
- (tree dom-modules path)
- (div
-  {:style (merge ui/center ui/fullscreen style-preview)}
-  (div {:style style-close, :on {:click on-close}} (<> span "Close" nil))
-  (if (some? tree)
-    (render-element (:tree tree) path dom-modules [(first path) :tree] 0)
-    (<> span "nothing" nil))))
+ (tree dom-modules module-id focuses)
+ (let [paths (->> focuses (map (fn [entry] (:path (last entry)))) (into #{}))]
+   (div
+    {:style (merge ui/center ui/fullscreen style-preview)}
+    (div {:style style-close, :on {:click on-close}} (<> span "Close" nil))
+    (if (some? tree)
+      (render-element (:tree tree) paths dom-modules [module-id :tree] 0)
+      (<> span "nothing" nil)))))
