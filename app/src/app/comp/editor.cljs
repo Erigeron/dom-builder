@@ -17,7 +17,7 @@
 
 (defcomp
  comp-editor
- (states dom-modules focus)
+ (states dom-modules focus clipboard)
  (let [path (:path focus)
        module-id (:module focus)
        dom-module (get dom-modules module-id)
@@ -28,6 +28,6 @@
    (div
     {:style style-editor}
     (cursor-> :modules comp-dom-modules states dom-modules focus)
-    (cursor-> :tree comp-tree-panel states dom-modules focus)
+    (cursor-> :tree comp-tree-panel states dom-modules focus clipboard)
     (cursor-> :props comp-props states (:props element) (:path focus))
     (cursor-> :style comp-style states (:style element) (:path focus)))))

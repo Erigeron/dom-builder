@@ -17,6 +17,13 @@
                 (fn [children]
                   (conj children (merge schema/element {:name (keyword op-data)})))))))))))
 
+(defn copy [db op-data session-id op-id op-time]
+  (let [path (get-in db [:sessions session-id :focus :path])
+        data-path (expand-tree-path path)
+        tree (get-in db data-path)]
+    (println "copy tree:" (pr-str tree))
+    (assoc-in db [:sessions session-id :clipboard] tree)))
+
 (defn delete-element [db op-data session-id op-id op-time]
   (if (< (count op-data) 3) (.warn js/console "Invalid path:" (clj->js op-data)))
   (let [data-path (expand-tree-path (drop-last 1 op-data)), last-idx (last op-data)]
@@ -57,6 +64,17 @@
 
 (defn choose [db op-data session-id op-id op-time]
   (assoc-in db [:sessions session-id :focus] {:path [op-data], :module op-data}))
+
+(defn clipboard-append [db op-data session-id op-id op-time]
+  (let [path (get-in db [:sessions session-id :focus :path])
+        tree (get-in db [:sessions session-id :clipboard])]
+    (if (< (count path) 2)
+      (do (.warn js/console "Invalid path:" (clj->js path)) db)
+      (let [data-path (expand-tree-path path)]
+        (-> db
+            (update-in
+             data-path
+             (fn [element] (update element :children (fn [children] (conj children tree))))))))))
 
 (defn insert-module [db op-data session-id op-id op-time]
   (let [path (get-in db [:sessions session-id :focus :path])
@@ -111,6 +129,22 @@
           (if (some? (:value op-data))
             (assoc props (:prop op-data) (:value op-data))
             (dissoc props (:prop op-data)))))))))
+
+(defn clipboard-before [db op-data session-id op-id op-time]
+  (let [path (get-in db [:sessions session-id :focus :path])
+        tree (get-in db [:sessions session-id :clipboard])]
+    (if (< (count path) 2)
+      (do (.warn js/console "Invalid path:" (clj->js path)) db)
+      (let [data-path (expand-tree-path (drop-last 1 path)), last-idx (last path)]
+        (-> db
+            (update-in
+             data-path
+             (fn [element]
+               (update
+                element
+                :children
+                (fn [children]
+                  (vec (concat (take last-idx children) [tree] (drop last-idx children))))))))))))
 
 (defn delete-module [db op-data session-id op-id op-time]
   (let [module-id (get-in db [:sessions session-id :focus :module])]

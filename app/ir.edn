@@ -267,7 +267,7 @@
                               ["[]" "app.comp.dom-modules" ":refer" ["[]" "comp-dom-modules"]]]],
                         :defs {"comp-editor" ["defcomp"
                                               "comp-editor"
-                                              ["states" "dom-modules" "focus"]
+                                              ["states" "dom-modules" "focus" "clipboard"]
                                               ["let"
                                                [["path" [":path" "focus"]]
                                                 ["module-id" [":module" "focus"]]
@@ -288,7 +288,13 @@
                                                  "states"
                                                  "dom-modules"
                                                  "focus"]
-                                                ["cursor->" ":tree" "comp-tree-panel" "states" "dom-modules" "focus"]
+                                                ["cursor->"
+                                                 ":tree"
+                                                 "comp-tree-panel"
+                                                 "states"
+                                                 "dom-modules"
+                                                 "focus"
+                                                 "clipboard"]
                                                 ["cursor->"
                                                  ":props"
                                                  "comp-props"
@@ -416,7 +422,6 @@
                                                        ["let"
                                                         [["module-id" ["get-in" "session" ["[]" ":focus" ":module"]]]
                                                          ["dom-module" ["get" "dom-modules" "module-id"]]]
-                                                        ["println" "|session" "session"]
                                                         ["comp-preview"
                                                          "dom-module"
                                                          "dom-modules"
@@ -434,7 +439,11 @@
                                                           ["case"
                                                            [":name" "router"]
                                                            [":home"
-                                                            ["comp-editor" "states" "dom-modules" [":focus" "session"]]]
+                                                            ["comp-editor"
+                                                             "states"
+                                                             "dom-modules"
+                                                             [":focus" "session"]
+                                                             [":clipboard" "session"]]]
                                                            [":profile" ["comp-profile" [":user" "store"]]]
                                                            ["div"
                                                             ["{}"]
@@ -695,6 +704,65 @@
                                              ["->" "cljs-manifest" ["aget" "0"] ["aget" "|js-name"]]
                                              ["->" "cljs-manifest" ["aget" "1"] ["aget" "|js-name"]]]]]]]]]},
                    :procs []},
+         "comp.clipboard" {:ns ["ns"
+                                "app.comp.clipboard"
+                                [":require-macros"
+                                 ["[]" "respo.macros" ":refer" ["[]" "defcomp" "<>" "span" "div" "a"]]]
+                                [":require"
+                                 ["[]" "hsl.core" ":refer" ["[]" "hsl"]]
+                                 ["[]" "respo-ui.style" ":as" "ui"]
+                                 ["[]" "respo-ui.style.colors" ":as" "colors"]
+                                 ["[]" "respo.core" ":refer" ["[]" "create-comp"]]
+                                 ["[]" "respo.comp.space" ":refer" ["[]" "=<"]]
+                                 ["[]" "app.style" ":as" "style"]]],
+                           :defs {"comp-clipboard" ["defcomp"
+                                                    "comp-clipboard"
+                                                    ["piece"]
+                                                    ["div"
+                                                     ["{}"]
+                                                     ["if"
+                                                      ["some?" "piece"]
+                                                      ["<>"
+                                                       "span"
+                                                       ["str"
+                                                        ["name" [":name" "piece"]]
+                                                        "|:"
+                                                        ["count" [":children" "piece"]]]
+                                                       "style-el-name"]
+                                                      ["<>" "span" "|Nothing here..." "style-nothing"]]
+                                                     ["=<" "8" "nil"]
+                                                     ["a"
+                                                      ["{}"
+                                                       [":inner-text" "|Append"]
+                                                       [":style" "style/click"]
+                                                       [":on" ["{}" [":click" "on-append"]]]]]
+                                                     ["=<" "8" "nil"]
+                                                     ["a"
+                                                      ["{}"
+                                                       [":inner-text" "|Before"]
+                                                       [":style" "style/click"]
+                                                       [":on" ["{}" [":click" "on-before"]]]]]]],
+                                  "style-nothing" ["def"
+                                                   "style-nothing"
+                                                   ["{}"
+                                                    [":font-family" "|Josefin Sans"]
+                                                    [":font-size" "14"]
+                                                    [":color" ["hsl" "0" "0" "50"]]]],
+                                  "style-el-name" ["def"
+                                                   "style-el-name"
+                                                   ["{}"
+                                                    [":color" ":white"]
+                                                    [":background-color" ["hsl" "240" "80" "60"]]
+                                                    [":padding" "|0 8px"]]],
+                                  "on-append" ["defn"
+                                               "on-append"
+                                               ["e" "d!" "m!"]
+                                               ["d!" ":dom-modules/clipboard-append" "nil"]],
+                                  "on-before" ["defn"
+                                               "on-before"
+                                               ["e" "d!" "m!"]
+                                               ["d!" ":dom-modules/clipboard-before" "nil"]]},
+                           :procs []},
          "comp.header" {:ns ["ns"
                              "app.comp.header"
                              [":require-macros" ["[]" "respo.macros" ":refer" ["[]" "defcomp" "<>" "span" "div"]]]
@@ -773,18 +841,19 @@
                                   ["[]" "respo.comp.space" ":refer" ["[]" "=<"]]
                                   ["[]" "app.style.layout" ":as" "layout"]
                                   ["[]" "app.style" ":as" "style"]
-                                  ["[]" "app.comp.tree" ":refer" ["[]" "comp-tree"]]]],
-                            :defs {"comp-tree-panel" ["defcomp"
-                                                      "comp-tree-panel"
-                                                      ["states" "dom-modules" "focus"]
-                                                      ["let"
-                                                       [["state" ["or" [":data" "states"] "|"]]
-                                                        ["tree-node" ["get" "dom-modules" [":module" "focus"]]]
-                                                        ["path" [":path" "focus"]]]
-                                                       ["div"
-                                                        ["{}"
-                                                         [":style" ["merge" [":tree" "layout/editor"] "style-panel"]]]
-                                                        ["div" ["{}"] ["<>" "code" "path" "nil"]]
+                                  ["[]" "app.comp.tree" ":refer" ["[]" "comp-tree"]]
+                                  ["[]" "app.comp.clipboard" ":refer" ["[]" "comp-clipboard"]]]],
+                            :defs {"on-input" ["defn" "on-input" ["e" "d!" "m!"] ["m!" [":value" "e"]]],
+                                   "on-before" ["defn"
+                                                "on-before"
+                                                ["el-name"]
+                                                ["fn"
+                                                 ["e" "d!" "m!"]
+                                                 ["d!" ":dom-modules/before-element" "el-name"]
+                                                 ["m!" "|"]]],
+                                   "render-operations" ["defn"
+                                                        "render-operations"
+                                                        ["state" "path"]
                                                         ["div"
                                                          ["{}"]
                                                          ["input"
@@ -808,48 +877,65 @@
                                                          ["=<" "8" "nil"]
                                                          ["a"
                                                           ["{}"
-                                                           [":inner-text" "|Rename"]
+                                                           [":inner-text" "|Copy"]
                                                            [":style" "style/click"]
-                                                           [":on" ["{}" [":click" ["on-rename" "state"]]]]]]
+                                                           [":on" ["{}" [":click" "on-copy"]]]]]
                                                          ["=<" "8" "nil"]
                                                          ["a"
                                                           ["{}"
                                                            [":inner-text" "|Delete"]
                                                            [":style" "style/click"]
-                                                           [":on" ["{}" [":click" ["on-delete" "path"]]]]]]]
+                                                           [":on" ["{}" [":click" ["on-delete" "path"]]]]]]
+                                                         ["=<" "8" "nil"]
+                                                         ["a"
+                                                          ["{}"
+                                                           [":inner-text" "|Rename"]
+                                                           [":style" "style/click"]
+                                                           [":on" ["{}" [":click" ["on-rename" "state"]]]]]]]],
+                                   "on-copy" ["defn" "on-copy" ["e" "d!" "m!"] ["d!" ":dom-modules/copy" "nil"]],
+                                   "style-panel" ["def" "style-panel" ["{}" [":overflow" ":auto"] [":padding" "8"]]],
+                                   "comp-tree-panel" ["defcomp"
+                                                      "comp-tree-panel"
+                                                      ["states" "dom-modules" "focus" "clipboard"]
+                                                      ["let"
+                                                       [["state" ["or" [":data" "states"] "|"]]
+                                                        ["tree-node" ["get" "dom-modules" [":module" "focus"]]]
+                                                        ["path" [":path" "focus"]]]
+                                                       ["div"
+                                                        ["{}"
+                                                         [":style" ["merge" [":tree" "layout/editor"] "style-panel"]]]
+                                                        ["div" ["{}"] ["<>" "code" "path" "nil"]]
+                                                        ["render-operations" "state" "path"]
+                                                        ["=<" "nil" "8"]
+                                                        ["comp-clipboard" "clipboard"]
                                                         ["=<" "nil" "16"]
                                                         ["if"
                                                          ["some?" "tree-node"]
                                                          ["comp-tree" "tree-node" ["[]" [":id" "tree-node"]] "path"]]]]],
-                                   "style-panel" ["def" "style-panel" ["{}" [":overflow" ":auto"] [":padding" "8"]]],
-                                   "on-delete" ["defn"
-                                                "on-delete"
-                                                ["path"]
-                                                ["fn" ["e" "d!" "m!"] ["d!" ":dom-modules/delete-element" "path"]]],
                                    "on-append" ["defn"
                                                 "on-append"
                                                 ["el-name"]
                                                 ["fn"
                                                  ["e" "d!" "m!"]
-                                                 ["d!"
-                                                  ":dom-modules/append-element"
-                                                  ["if" ["string/blank?" "el-name"] "|div" "el-name"]]
-                                                 ["m!" "|"]]],
-                                   "on-input" ["defn" "on-input" ["e" "d!" "m!"] ["m!" [":value" "e"]]],
+                                                 ["if"
+                                                  ["not" ["string/blank?" "el-name"]]
+                                                  ["do"
+                                                   ["d!"
+                                                    ":dom-modules/append-element"
+                                                    ["if" ["string/blank?" "el-name"] "|div" "el-name"]]
+                                                   ["m!" "|"]]]]],
                                    "on-rename" ["defn"
                                                 "on-rename"
                                                 ["text"]
                                                 ["fn"
                                                  ["e" "d!" "m!"]
-                                                 ["d!" ":dom-modules/rename-element" "text"]
-                                                 ["m!" "|"]]],
-                                   "on-before" ["defn"
-                                                "on-before"
-                                                ["el-name"]
-                                                ["fn"
-                                                 ["e" "d!" "m!"]
-                                                 ["d!" ":dom-modules/before-element" "el-name"]
-                                                 ["m!" "|"]]]},
+                                                 ["if"
+                                                  ["not" ["string/blank?" "text"]]
+                                                  ["do" ["d!" ":dom-modules/rename-element" "text"] ["m!" "|"]]]]],
+                                   "on-delete" ["defn"
+                                                "on-delete"
+                                                ["path"]
+                                                ["fn" ["e" "d!" "m!"] ["d!" ":dom-modules/delete-element" "path"]]]},
                             :procs []},
          "comp.style" {:ns ["ns"
                             "app.comp.style"

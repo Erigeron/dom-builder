@@ -32,4 +32,9 @@
       (dom-modules/insert-module db op-data session-id op-id op-time)
     :dom-modules/delete-module
       (dom-modules/delete-module db op-data session-id op-id op-time)
+    :dom-modules/copy (dom-modules/copy db op-data session-id op-id op-time)
+    :dom-modules/clipboard-append
+      (dom-modules/clipboard-append db op-data session-id op-id op-time)
+    :dom-modules/clipboard-before
+      (dom-modules/clipboard-before db op-data session-id op-id op-time)
     (do (println "Unhandled op:" (str op)) db)))

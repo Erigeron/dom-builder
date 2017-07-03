@@ -25,6 +25,7 @@
    :nickname nil,
    :router {:name :home, :data nil, :router nil},
    :focus {:module nil, :path []},
+   :clipboard nil,
    :notifications []})
 
 (def notification {:id nil, :kind nil, :text nil})

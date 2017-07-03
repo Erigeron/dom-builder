@@ -31,7 +31,6 @@
      (if (= :preview (get-in store [:router :name]))
        (let [module-id (get-in session [:focus :module])
              dom-module (get dom-modules module-id)]
-         (println "session" session)
          (comp-preview
           dom-module
           dom-modules
@@ -43,7 +42,7 @@
         (if (:logged-in? store)
           (let [router (:router store)]
             (case (:name router)
-              :home (comp-editor states dom-modules (:focus session))
+              :home (comp-editor states dom-modules (:focus session) (:clipboard session))
               :profile (comp-profile (:user store))
               (div {} (<> span (str "404 page: " (pr-str router)) nil))))
           (comp-login states))

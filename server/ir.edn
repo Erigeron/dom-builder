@@ -43,6 +43,16 @@
                                                                   ["merge"
                                                                    "schema/element"
                                                                    ["{}" [":name" ["keyword" "op-data"]]]]]]]]]]]]]],
+                                       "copy" ["defn"
+                                               "copy"
+                                               ["db" "op-data" "session-id" "op-id" "op-time"]
+                                               ["let"
+                                                [["path"
+                                                  ["get-in" "db" ["[]" ":sessions" "session-id" ":focus" ":path"]]]
+                                                 ["data-path" ["expand-tree-path" "path"]]
+                                                 ["tree" ["get-in" "db" "data-path"]]]
+                                                ["println" "|copy tree:" ["pr-str" "tree"]]
+                                                ["assoc-in" "db" ["[]" ":sessions" "session-id" ":clipboard"] "tree"]]],
                                        "delete-element" ["defn"
                                                          "delete-element"
                                                          ["db" "op-data" "session-id" "op-id" "op-time"]
@@ -118,6 +128,35 @@
                                                   "db"
                                                   ["[]" ":sessions" "session-id" ":focus"]
                                                   ["{}" [":path" ["[]" "op-data"]] [":module" "op-data"]]]],
+                                       "clipboard-append" ["defn"
+                                                           "clipboard-append"
+                                                           ["db" "op-data" "session-id" "op-id" "op-time"]
+                                                           ["let"
+                                                            [["path"
+                                                              ["get-in"
+                                                               "db"
+                                                               ["[]" ":sessions" "session-id" ":focus" ":path"]]]
+                                                             ["tree"
+                                                              ["get-in"
+                                                               "db"
+                                                               ["[]" ":sessions" "session-id" ":clipboard"]]]]
+                                                            ["if"
+                                                             ["<" ["count" "path"] "2"]
+                                                             ["do"
+                                                              [".warn" "js/console" "|Invalid path:" ["clj->js" "path"]]
+                                                              "db"]
+                                                             ["let"
+                                                              [["data-path" ["expand-tree-path" "path"]]]
+                                                              ["->"
+                                                               "db"
+                                                               ["update-in"
+                                                                "data-path"
+                                                                ["fn"
+                                                                 ["element"]
+                                                                 ["update"
+                                                                  "element"
+                                                                  ":children"
+                                                                  ["fn" ["children"] ["conj" "children" "tree"]]]]]]]]]],
                                        "insert-module" ["defn"
                                                         "insert-module"
                                                         ["db" "op-data" "session-id" "op-id" "op-time"]
@@ -214,6 +253,43 @@
                                                          ["some?" [":value" "op-data"]]
                                                          ["assoc" "props" [":prop" "op-data"] [":value" "op-data"]]
                                                          ["dissoc" "props" [":prop" "op-data"]]]]]]]]],
+                                       "clipboard-before" ["defn"
+                                                           "clipboard-before"
+                                                           ["db" "op-data" "session-id" "op-id" "op-time"]
+                                                           ["let"
+                                                            [["path"
+                                                              ["get-in"
+                                                               "db"
+                                                               ["[]" ":sessions" "session-id" ":focus" ":path"]]]
+                                                             ["tree"
+                                                              ["get-in"
+                                                               "db"
+                                                               ["[]" ":sessions" "session-id" ":clipboard"]]]]
+                                                            ["if"
+                                                             ["<" ["count" "path"] "2"]
+                                                             ["do"
+                                                              [".warn" "js/console" "|Invalid path:" ["clj->js" "path"]]
+                                                              "db"]
+                                                             ["let"
+                                                              [["data-path"
+                                                                ["expand-tree-path" ["drop-last" "1" "path"]]]
+                                                               ["last-idx" ["last" "path"]]]
+                                                              ["->"
+                                                               "db"
+                                                               ["update-in"
+                                                                "data-path"
+                                                                ["fn"
+                                                                 ["element"]
+                                                                 ["update"
+                                                                  "element"
+                                                                  ":children"
+                                                                  ["fn"
+                                                                   ["children"]
+                                                                   ["vec"
+                                                                    ["concat"
+                                                                     ["take" "last-idx" "children"]
+                                                                     ["[]" "tree"]
+                                                                     ["drop" "last-idx" "children"]]]]]]]]]]]],
                                        "delete-module" ["defn"
                                                         "delete-module"
                                                         ["db" "op-data" "session-id" "op-id" "op-time"]
@@ -315,6 +391,7 @@
                                       [":nickname" "nil"]
                                       [":router" ["{}" [":name" ":home"] [":data" "nil"] [":router" "nil"]]]
                                       [":focus" ["{}" [":module" "nil"] [":path" ["[]"]]]]
+                                      [":clipboard" "nil"]
                                       [":notifications" ["[]"]]]],
                           "notification" ["def" "notification" ["{}" [":id" "nil"] [":kind" "nil"] [":text" "nil"]]]},
                    :procs []},
@@ -526,12 +603,12 @@
                                               [["session-id" [".generate" "shortid"]]]
                                               ["handle-message" ":session/connect" "nil" "session-id"]
                                               ["swap!" "socket-registry" "assoc" "session-id" "socket"]
+                                              [".info" "js/console" "|New client."]
                                               [".on"
                                                "socket"
                                                "|message"
                                                ["fn"
                                                 ["rawData"]
-                                                [".info" "js/console" "|New client."]
                                                 ["let"
                                                  [["action" ["reader/read-string" "rawData"]]
                                                   [["[]" "op" "op-data"] "action"]]
@@ -661,5 +738,21 @@
                                              ["dom-modules/insert-module" "db" "op-data" "session-id" "op-id" "op-time"]]
                                             [":dom-modules/delete-module"
                                              ["dom-modules/delete-module" "db" "op-data" "session-id" "op-id" "op-time"]]
+                                            [":dom-modules/copy"
+                                             ["dom-modules/copy" "db" "op-data" "session-id" "op-id" "op-time"]]
+                                            [":dom-modules/clipboard-append"
+                                             ["dom-modules/clipboard-append"
+                                              "db"
+                                              "op-data"
+                                              "session-id"
+                                              "op-id"
+                                              "op-time"]]
+                                            [":dom-modules/clipboard-before"
+                                             ["dom-modules/clipboard-before"
+                                              "db"
+                                              "op-data"
+                                              "session-id"
+                                              "op-id"
+                                              "op-time"]]
                                             ["do" ["println" "|Unhandled op:" ["str" "op"]] "db"]]]},
                          :procs []}}}
