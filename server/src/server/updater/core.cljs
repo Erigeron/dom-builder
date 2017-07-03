@@ -23,6 +23,8 @@
       (dom-modules/delete-element db op-data session-id op-id op-time)
     :dom-modules/rename-element
       (dom-modules/rename-element db op-data session-id op-id op-time)
+    :dom-modules/before-element
+      (dom-modules/before-element db op-data session-id op-id op-time)
     :dom-modules/focus (dom-modules/focus db op-data session-id op-id op-time)
     :dom-modules/set-style (dom-modules/set-style db op-data session-id op-id op-time)
     :dom-modules/set-prop (dom-modules/set-prop db op-data session-id op-id op-time)

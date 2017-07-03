@@ -7,14 +7,8 @@
             [respo-ui.style.colors :as colors]
             [respo.core :refer [create-comp]]
             [respo.comp.space :refer [=<]]
-            [app.style.layout :as layout]))
-
-(def style-insert
-  {:text-decoration :underline,
-   :font-size 12,
-   :vertical-align :middle,
-   :color (hsl 240 50 70),
-   :cursor :pointer})
+            [app.style.layout :as layout]
+            [app.style :as style]))
 
 (defn on-input [e d! m!] (m! (:value e)))
 
@@ -22,24 +16,26 @@
 
 (defn on-insert [module-id] (fn [e d! m!] (d! :dom-modules/insert-module module-id)))
 
-(def style-list {:background-color (hsl 0 0 90), :overflow :auto})
+(def style-list {:overflow :auto, :max-height 400})
 
-(def style-highlight {:font-weight :bold})
+(def style-highlight {:background-color (hsl 240 40 96)})
 
 (def style-entry {:padding "0 8px", :cursor :pointer})
 
 (defn render-module-list [dom-modules focus]
-  (->> dom-modules
-       (map
-        (fn [entry]
-          (let [[k m] entry]
-            [k
-             (div
-              {:style (merge style-entry (if (= k (:module focus)) style-highlight)),
-               :on {:click (on-choose (:id m))}}
-              (<> span (:name m) nil)
-              (=< 8 nil)
-              (span {:inner-text "insert", :style style-insert, :on {:click (on-insert k)}}))])))))
+  (div
+   {:style (merge style-list)}
+   (->> dom-modules
+        (map
+         (fn [entry]
+           (let [[k m] entry]
+             [k
+              (div
+               {:style (merge style-entry (if (= k (:module focus)) style-highlight)),
+                :on {:click (on-choose (:id m))}}
+               (<> span (:name m) nil)
+               (=< 8 nil)
+               (span {:inner-text "insert", :style style/click, :on {:click (on-insert k)}}))]))))))
 
 (defn on-delete [e d! m!] (d! :dom-modules/delete-module nil))
 
@@ -51,20 +47,19 @@
  (states dom-modules focus)
  (let [state (or (:data states) "")]
    (div
-    {:style (merge (:grid layout/modules-panel) (:modules layout/editor))}
+    {:style (merge (:modules layout/editor))}
+    (render-module-list dom-modules focus)
+    (=< nil 8)
     (div
-     {:style (merge (:list layout/modules-panel) style-list)}
-     (render-module-list dom-modules focus))
-    (div
-     {:style (:control layout/modules-panel)}
+     {:style {}}
      (div
       {}
       (input
        {:value state, :placeholder "module name", :style ui/input, :on {:input on-input}}))
      (div
       {}
-      (button {:inner-text "Create", :style ui/button, :on {:click (on-create state)}})
+      (a {:inner-text "Create", :style style/click, :on {:click (on-create state)}})
       (=< 8 nil)
-      (button {:inner-text "Rename", :style ui/button})
+      (a {:inner-text "Rename", :style style/click})
       (=< 8 nil)
-      (button {:inner-text "Delete", :style ui/button, :on {:click on-delete}}))))))
+      (a {:inner-text "Delete", :style style/click, :on {:click on-delete}}))))))

@@ -1,5 +1,11 @@
 
-(ns app.style (:require [respo-ui.style :as ui]))
+(ns app.style (:require [respo-ui.style :as ui] [hsl.core :refer [hsl]]))
 
-(def tiny-button
-  (merge ui/button {:font-size 12, :line-height 1.4, :padding "0 8px", :min-width 40}))
+(def click
+  {:text-decoration :underline,
+   :font-familze "Josefin Sans",
+   :font-size 13,
+   :font-weight 300,
+   :cursor :pointer,
+   :outline :none,
+   :color (hsl 240 90 60)})

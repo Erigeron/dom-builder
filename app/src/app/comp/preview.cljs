@@ -41,6 +41,8 @@
 
 (defn on-close [e d! m!] (d! :router/change {:name :home, :data nil}))
 
+(def style-missing {:font-family "Josefin Sans", :font-weight 100, :font-size 32})
+
 (defcomp
  comp-preview
  (tree dom-modules module-id focuses)
@@ -50,4 +52,4 @@
     (div {:style style-close, :on {:click on-close}} (<> span "Close" nil))
     (if (some? tree)
       (render-element (:tree tree) paths dom-modules [module-id :tree] 0)
-      (<> span "nothing" nil)))))
+      (<> span "No tree is found" style-missing)))))

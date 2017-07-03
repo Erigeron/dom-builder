@@ -32,13 +32,3 @@
    :tree {:grid-area "1/2/span 2/span 2"},
    :props {:grid-area "1/5/span 1/span 2"},
    :style {:grid-area "2/5/span 1/span 2"}})
-
-(def modules-panel
-  {:grid {:display :grid,
-          :justify-items :stretch,
-          :align-items :stretch,
-          :grid-template-rows "1fr 1fr",
-          :grid-template-columns "1fr",
-          :grid-gap "8px"},
-   :list {:grid-area "1/1"},
-   :control {:grid-area "2/1"}})

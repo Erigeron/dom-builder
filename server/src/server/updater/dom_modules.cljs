@@ -79,6 +79,25 @@
                     {:id op-id, :name op-data, :tree (merge schema/element {:name :div})})]
     (assoc-in db [:dom-modules op-id] new-module)))
 
+(defn before-element [db op-data session-id op-id op-time]
+  (let [path (get-in db [:sessions session-id :focus :path])]
+    (if (< (count path) 2)
+      (do (.warn js/console "Invalid path:" (clj->js path)) db)
+      (let [data-path (expand-tree-path (drop-last 1 path)), last-idx (last path)]
+        (-> db
+            (update-in
+             data-path
+             (fn [element]
+               (update
+                element
+                :children
+                (fn [children]
+                  (vec
+                   (concat
+                    (take last-idx children)
+                    [(merge schema/element {:name (keyword op-data)})]
+                    (drop last-idx children))))))))))))
+
 (defn set-prop [db op-data session-id op-id op-time]
   (let [path (get-in db [:sessions session-id :focus :path])]
     (update-in

@@ -51,53 +51,73 @@
                       :defs {"comp-tree" ["defcomp"
                                           "comp-tree"
                                           ["node-tree" "base-path" "focus-path"]
-                                          ["if"
-                                           ["=" ":dom-module" [":type" "node-tree"]]
-                                           ["div"
-                                            ["{}"]
-                                            ["div"
-                                             ["{}"
-                                              [":style"
-                                               ["merge"
-                                                "style-module-name"
-                                                ["if" ["=" "base-path" "focus-path"] "style-focus"]]]
-                                              [":on" ["{}" [":click" ["on-focus" "base-path"]]]]]
-                                             ["<>" "span" [":name" "node-tree"] "nil"]]
-                                            ["div"
-                                             ["{}" [":style" "style-children"]]
-                                             ["comp-tree"
-                                              [":tree" "node-tree"]
-                                              ["[]" [":id" "node-tree"] ":tree"]
-                                              "focus-path"]]]
-                                           ["div"
-                                            ["{}"]
+                                          ["case"
+                                           [":type" "node-tree"]
+                                           [":dom-module"
                                             ["div"
                                              ["{}"]
                                              ["div"
                                               ["{}"
                                                [":style"
                                                 ["merge"
-                                                 "style-element-name"
+                                                 "style-module-name"
                                                  ["if" ["=" "base-path" "focus-path"] "style-focus"]]]
                                                [":on" ["{}" [":click" ["on-focus" "base-path"]]]]]
-                                              ["<>" "span" [":name" "node-tree"] "nil"]]]
+                                              ["<>" "span" [":name" "node-tree"] "nil"]]
+                                             ["div"
+                                              ["{}" [":style" "style-children"]]
+                                              ["if"
+                                               ["contains?" "node-tree" ":tree"]
+                                               ["comp-tree"
+                                                [":tree" "node-tree"]
+                                                ["[]" [":id" "node-tree"] ":tree"]
+                                                "focus-path"]]]]]
+                                           [":element"
                                             ["div"
-                                             ["{}" [":style" "style-children"]]
-                                             ["->>"
-                                              [":children" "node-tree"]
-                                              ["map-indexed"
-                                               ["fn"
-                                                ["idx" "child"]
-                                                ["[]"
-                                                 "idx"
-                                                 ["comp-tree" "child" ["conj" "base-path" "idx"] "focus-path"]]]]]]]]],
+                                             ["{}"]
+                                             ["div"
+                                              ["{}"]
+                                              ["div"
+                                               ["{}"
+                                                [":style"
+                                                 ["merge"
+                                                  "style-element-name"
+                                                  ["if" ["=" "base-path" "focus-path"] "style-focus"]]]
+                                                [":on" ["{}" [":click" ["on-focus" "base-path"]]]]]
+                                               ["let"
+                                                [["el-name" [":name" "node-tree"]]]
+                                                ["<>"
+                                                 "span"
+                                                 ["if"
+                                                  ["string?" "el-name"]
+                                                  ["subs" "el-name" "1"]
+                                                  ["if"
+                                                   ["keyword?" "el-name"]
+                                                   ["name" "el-name"]
+                                                   ["do" ["println" "|nil" "node-tree"] "|nil"]]]
+                                                 "nil"]]]]
+                                             ["div"
+                                              ["{}" [":style" "style-children"]]
+                                              ["->>"
+                                               [":children" "node-tree"]
+                                               ["map-indexed"
+                                                ["fn"
+                                                 ["idx" "child"]
+                                                 ["[]"
+                                                  "idx"
+                                                  ["comp-tree" "child" ["conj" "base-path" "idx"] "focus-path"]]]]]]]]
+                                           ["<>" "span" "|nothing" "nil"]]],
                              "style-module-name" ["def"
                                                   "style-module-name"
                                                   ["{}"
-                                                   [":background-color" ["hsl" "60" "80" "80"]]
+                                                   [":background-color" ["hsl" "40" "80" "60"]]
+                                                   [":color" ":white"]
                                                    [":display" ":inline-block"]
                                                    [":padding" "|0 8px"]
-                                                   [":cursor" ":pointer"]]],
+                                                   [":cursor" ":pointer"]
+                                                   [":line-height" "|1.6em"]
+                                                   [":font-size" "12"]
+                                                   [":margin" "1"]]],
                              "style-children" ["def"
                                                "style-children"
                                                ["{}"
@@ -106,8 +126,9 @@
                              "style-element-name" ["def"
                                                    "style-element-name"
                                                    ["{}"
-                                                    [":background-color" ["hsl" "260" "80" "70"]]
+                                                    [":background-color" ["hsl" "260" "80" "80"]]
                                                     [":padding" "|0 8px"]
+                                                    [":margin" "1"]
                                                     [":display" ":inline-block"]
                                                     [":cursor" ":pointer"]
                                                     [":color" ":white"]
@@ -117,7 +138,9 @@
                                          "on-focus"
                                          ["path"]
                                          ["fn" ["e" "d!" "m!"] ["d!" ":dom-modules/focus" "path"]]],
-                             "style-focus" ["def" "style-focus" ["{}" [":border" "|2px solid red"] [":z-index" "99"]]]},
+                             "style-focus" ["def"
+                                            "style-focus"
+                                            ["{}" [":outline" ["str" "|1px dashed " ["hsl" "240" "80" "60"]]]]]},
                       :procs []},
          "comp.preview" {:ns ["ns"
                               "app.comp.preview"
@@ -152,7 +175,7 @@
                                                     "dom-modules"
                                                     ["[]" "module-id" ":tree"]
                                                     "0"]
-                                                   ["<>" "span" "|nothing" "nil"]]]]],
+                                                   ["<>" "span" "|No tree is found" "style-missing"]]]]],
                                 "style-preview" ["def"
                                                  "style-preview"
                                                  ["merge"
@@ -215,7 +238,13 @@
                                             ["d!" ":router/change" ["{}" [":name" ":home"] [":data" "nil"]]]],
                                 "style-highlight" ["def"
                                                    "style-highlight"
-                                                   ["{}" [":outline" ["str" "|1px dashed " ["hsl" "240" "80" "70"]]]]]},
+                                                   ["{}" [":outline" ["str" "|1px dashed " ["hsl" "240" "80" "70"]]]]],
+                                "style-missing" ["def"
+                                                 "style-missing"
+                                                 ["{}"
+                                                  [":font-family" "|Josefin Sans"]
+                                                  [":font-weight" "100"]
+                                                  [":font-size" "32"]]]},
                          :procs []},
          "schema" {:ns ["ns" "app.schema"],
                    :defs {"configs" ["def" "configs" ["{}" [":storage-key" "|workflow-storage"] [":port" "5021"]]]},
@@ -425,16 +454,19 @@
                                                     "style-contaier"
                                                     ["merge" [":grid" "layout/workspace"] ["{}"]]]},
                            :procs []},
-         "style" {:ns ["ns" "app.style" [":require" ["[]" "respo-ui.style" ":as" "ui"]]],
-                  :defs {"tiny-button" ["def"
-                                        "tiny-button"
-                                        ["merge"
-                                         "ui/button"
-                                         ["{}"
-                                          [":font-size" "12"]
-                                          [":line-height" "1.4"]
-                                          [":padding" "|0 8px"]
-                                          [":min-width" "40"]]]]},
+         "style" {:ns ["ns"
+                       "app.style"
+                       [":require" ["[]" "respo-ui.style" ":as" "ui"] ["[]" "hsl.core" ":refer" ["[]" "hsl"]]]],
+                  :defs {"click" ["def"
+                                  "click"
+                                  ["{}"
+                                   [":text-decoration" ":underline"]
+                                   [":font-familze" "|Josefin Sans"]
+                                   [":font-size" "13"]
+                                   [":font-weight" "300"]
+                                   [":cursor" ":pointer"]
+                                   [":outline" ":none"]
+                                   [":color" ["hsl" "240" "90" "60"]]]]},
                   :procs []},
          "main" {:ns ["ns"
                       "app.main"
@@ -762,28 +794,34 @@
                                                            [":style" "ui/input"]
                                                            [":on" ["{}" [":input" "on-input"]]]]]
                                                          ["=<" "8" "nil"]
-                                                         ["button"
+                                                         ["a"
                                                           ["{}"
                                                            [":inner-text" "|Append"]
-                                                           [":style" "ui/button"]
+                                                           [":style" "style/click"]
                                                            [":on" ["{}" [":click" ["on-append" "state"]]]]]]
                                                          ["=<" "8" "nil"]
-                                                         ["button"
+                                                         ["a"
+                                                          ["{}"
+                                                           [":inner-text" "|Before"]
+                                                           [":style" "style/click"]
+                                                           [":on" ["{}" [":click" ["on-before" "state"]]]]]]
+                                                         ["=<" "8" "nil"]
+                                                         ["a"
                                                           ["{}"
                                                            [":inner-text" "|Rename"]
-                                                           [":style" "ui/button"]
+                                                           [":style" "style/click"]
                                                            [":on" ["{}" [":click" ["on-rename" "state"]]]]]]
                                                          ["=<" "8" "nil"]
-                                                         ["button"
+                                                         ["a"
                                                           ["{}"
                                                            [":inner-text" "|Delete"]
-                                                           [":style" "ui/button"]
+                                                           [":style" "style/click"]
                                                            [":on" ["{}" [":click" ["on-delete" "path"]]]]]]]
                                                         ["=<" "nil" "16"]
                                                         ["if"
                                                          ["some?" "tree-node"]
                                                          ["comp-tree" "tree-node" ["[]" [":id" "tree-node"]] "path"]]]]],
-                                   "style-panel" ["def" "style-panel" ["{}" [":overflow" ":auto"]]],
+                                   "style-panel" ["def" "style-panel" ["{}" [":overflow" ":auto"] [":padding" "8"]]],
                                    "on-delete" ["defn"
                                                 "on-delete"
                                                 ["path"]
@@ -801,7 +839,17 @@
                                    "on-rename" ["defn"
                                                 "on-rename"
                                                 ["text"]
-                                                ["fn" ["e" "d!" "m!"] ["d!" ":dom-modules/rename-element" "text"]]]},
+                                                ["fn"
+                                                 ["e" "d!" "m!"]
+                                                 ["d!" ":dom-modules/rename-element" "text"]
+                                                 ["m!" "|"]]],
+                                   "on-before" ["defn"
+                                                "on-before"
+                                                ["el-name"]
+                                                ["fn"
+                                                 ["e" "d!" "m!"]
+                                                 ["d!" ":dom-modules/before-element" "el-name"]
+                                                 ["m!" "|"]]]},
                             :procs []},
          "comp.style" {:ns ["ns"
                             "app.comp.style"
@@ -889,16 +937,9 @@
                                    ["[]" "respo-ui.style.colors" ":as" "colors"]
                                    ["[]" "respo.core" ":refer" ["[]" "create-comp"]]
                                    ["[]" "respo.comp.space" ":refer" ["[]" "=<"]]
-                                   ["[]" "app.style.layout" ":as" "layout"]]],
-                             :defs {"style-insert" ["def"
-                                                    "style-insert"
-                                                    ["{}"
-                                                     [":text-decoration" ":underline"]
-                                                     [":font-size" "12"]
-                                                     [":vertical-align" ":middle"]
-                                                     [":color" ["hsl" "240" "50" "70"]]
-                                                     [":cursor" ":pointer"]]],
-                                    "on-input" ["defn" "on-input" ["e" "d!" "m!"] ["m!" [":value" "e"]]],
+                                   ["[]" "app.style.layout" ":as" "layout"]
+                                   ["[]" "app.style" ":as" "style"]]],
+                             :defs {"on-input" ["defn" "on-input" ["e" "d!" "m!"] ["m!" [":value" "e"]]],
                                     "on-choose" ["defn"
                                                  "on-choose"
                                                  ["module-id"]
@@ -913,18 +954,11 @@
                                                         ["let"
                                                          [["state" ["or" [":data" "states"] "|"]]]
                                                          ["div"
-                                                          ["{}"
-                                                           [":style"
-                                                            ["merge"
-                                                             [":grid" "layout/modules-panel"]
-                                                             [":modules" "layout/editor"]]]]
+                                                          ["{}" [":style" ["merge" [":modules" "layout/editor"]]]]
+                                                          ["render-module-list" "dom-modules" "focus"]
+                                                          ["=<" "nil" "8"]
                                                           ["div"
-                                                           ["{}"
-                                                            [":style"
-                                                             ["merge" [":list" "layout/modules-panel"] "style-list"]]]
-                                                           ["render-module-list" "dom-modules" "focus"]]
-                                                          ["div"
-                                                           ["{}" [":style" [":control" "layout/modules-panel"]]]
+                                                           ["{}" [":style" ["{}"]]]
                                                            ["div"
                                                             ["{}"]
                                                             ["input"
@@ -935,54 +969,54 @@
                                                               [":on" ["{}" [":input" "on-input"]]]]]]
                                                            ["div"
                                                             ["{}"]
-                                                            ["button"
+                                                            ["a"
                                                              ["{}"
                                                               [":inner-text" "|Create"]
-                                                              [":style" "ui/button"]
+                                                              [":style" "style/click"]
                                                               [":on" ["{}" [":click" ["on-create" "state"]]]]]]
                                                             ["=<" "8" "nil"]
-                                                            ["button"
-                                                             ["{}" [":inner-text" "|Rename"] [":style" "ui/button"]]]
+                                                            ["a"
+                                                             ["{}" [":inner-text" "|Rename"] [":style" "style/click"]]]
                                                             ["=<" "8" "nil"]
-                                                            ["button"
+                                                            ["a"
                                                              ["{}"
                                                               [":inner-text" "|Delete"]
-                                                              [":style" "ui/button"]
+                                                              [":style" "style/click"]
                                                               [":on" ["{}" [":click" "on-delete"]]]]]]]]]],
-                                    "style-list" ["def"
-                                                  "style-list"
-                                                  ["{}"
-                                                   [":background-color" ["hsl" "0" "0" "90"]]
-                                                   [":overflow" ":auto"]]],
-                                    "style-highlight" ["def" "style-highlight" ["{}" [":font-weight" ":bold"]]],
+                                    "style-list" ["def" "style-list" ["{}" [":overflow" ":auto"] [":max-height" "400"]]],
+                                    "style-highlight" ["def"
+                                                       "style-highlight"
+                                                       ["{}" [":background-color" ["hsl" "240" "40" "96"]]]],
                                     "render-module-list" ["defn"
                                                           "render-module-list"
                                                           ["dom-modules" "focus"]
-                                                          ["->>"
-                                                           "dom-modules"
-                                                           ["map"
-                                                            ["fn"
-                                                             ["entry"]
-                                                             ["let"
-                                                              [[["[]" "k" "m"] "entry"]]
-                                                              ["[]"
-                                                               "k"
-                                                               ["div"
-                                                                ["{}"
-                                                                 [":style"
-                                                                  ["merge"
-                                                                   "style-entry"
-                                                                   ["if"
-                                                                    ["=" "k" [":module" "focus"]]
-                                                                    "style-highlight"]]]
-                                                                 [":on" ["{}" [":click" ["on-choose" [":id" "m"]]]]]]
-                                                                ["<>" "span" [":name" "m"] "nil"]
-                                                                ["=<" "8" "nil"]
-                                                                ["span"
+                                                          ["div"
+                                                           ["{}" [":style" ["merge" "style-list"]]]
+                                                           ["->>"
+                                                            "dom-modules"
+                                                            ["map"
+                                                             ["fn"
+                                                              ["entry"]
+                                                              ["let"
+                                                               [[["[]" "k" "m"] "entry"]]
+                                                               ["[]"
+                                                                "k"
+                                                                ["div"
                                                                  ["{}"
-                                                                  [":inner-text" "|insert"]
-                                                                  [":style" "style-insert"]
-                                                                  [":on" ["{}" [":click" ["on-insert" "k"]]]]]]]]]]]]],
+                                                                  [":style"
+                                                                   ["merge"
+                                                                    "style-entry"
+                                                                    ["if"
+                                                                     ["=" "k" [":module" "focus"]]
+                                                                     "style-highlight"]]]
+                                                                  [":on" ["{}" [":click" ["on-choose" [":id" "m"]]]]]]
+                                                                 ["<>" "span" [":name" "m"] "nil"]
+                                                                 ["=<" "8" "nil"]
+                                                                 ["span"
+                                                                  ["{}"
+                                                                   [":inner-text" "|insert"]
+                                                                   [":style" "style/click"]
+                                                                   [":on" ["{}" [":click" ["on-insert" "k"]]]]]]]]]]]]]],
                                     "on-delete" ["defn"
                                                  "on-delete"
                                                  ["e" "d!" "m!"]
@@ -1040,18 +1074,5 @@
                                            [":modules" ["{}" [":grid-area" "|1/1/span 2/span 1"]]]
                                            [":tree" ["{}" [":grid-area" "|1/2/span 2/span 2"]]]
                                            [":props" ["{}" [":grid-area" "|1/5/span 1/span 2"]]]
-                                           [":style" ["{}" [":grid-area" "|2/5/span 1/span 2"]]]]],
-                                "modules-panel" ["def"
-                                                 "modules-panel"
-                                                 ["{}"
-                                                  [":grid"
-                                                   ["{}"
-                                                    [":display" ":grid"]
-                                                    [":justify-items" ":stretch"]
-                                                    [":align-items" ":stretch"]
-                                                    [":grid-template-rows" "|1fr 1fr"]
-                                                    [":grid-template-columns" "|1fr"]
-                                                    [":grid-gap" "|8px"]]]
-                                                  [":list" ["{}" [":grid-area" "|1/1"]]]
-                                                  [":control" ["{}" [":grid-area" "|2/1"]]]]]},
+                                           [":style" ["{}" [":grid-area" "|2/5/span 1/span 2"]]]]]},
                          :procs []}}}
