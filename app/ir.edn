@@ -80,21 +80,30 @@
                                               ["div"
                                                ["{}"
                                                 [":style"
-                                                 ["merge"
-                                                  "style-element-name"
-                                                  ["if" ["=" "base-path" "focus-path"] "style-focus"]]]
+                                                 ["let"
+                                                  [["s" [":style" "node-tree"]]]
+                                                  ["merge"
+                                                   "style-element-name"
+                                                   ["if" ["=" "base-path" "focus-path"] "style-focus"]
+                                                   ["if" ["contains?" "s" ":color"] ["{}" [":color" [":color" "s"]]]]
+                                                   ["if"
+                                                    ["contains?" "s" ":background-color"]
+                                                    ["{}" [":background-color" [":background-color" "s"]]]]]]]
                                                 [":on" ["{}" [":click" ["on-focus" "base-path"]]]]]
                                                ["let"
                                                 [["el-name" [":name" "node-tree"]]]
                                                 ["<>"
                                                  "span"
-                                                 ["if"
-                                                  ["string?" "el-name"]
-                                                  ["subs" "el-name" "1"]
+                                                 ["str"
                                                   ["if"
-                                                   ["keyword?" "el-name"]
-                                                   ["name" "el-name"]
-                                                   ["do" ["println" "|nil" "node-tree"] "|nil"]]]
+                                                   ["string?" "el-name"]
+                                                   ["subs" "el-name" "1"]
+                                                   ["if" ["keyword?" "el-name"] ["name" "el-name"] "|nil"]]
+                                                  ["let"
+                                                   [["p" [":props" "node-tree"]]]
+                                                   ["if"
+                                                    ["contains?" "p" ":inner-text"]
+                                                    ["str" "|= " [":inner-text" "p"]]]]]
                                                  "nil"]]]]
                                              ["div"
                                               ["{}" [":style" "style-children"]]
@@ -117,7 +126,8 @@
                                                    [":cursor" ":pointer"]
                                                    [":line-height" "|1.6em"]
                                                    [":font-size" "12"]
-                                                   [":margin" "1"]]],
+                                                   [":margin" "1"]
+                                                   [":border-radius" "|8px"]]],
                              "style-children" ["def"
                                                "style-children"
                                                ["{}"

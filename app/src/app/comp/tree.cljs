@@ -17,7 +17,8 @@
    :cursor :pointer,
    :line-height "1.6em",
    :font-size 12,
-   :margin 1})
+   :margin 1,
+   :border-radius "8px"})
 
 (def style-children {:padding-left 16, :border-left (str "1px solid " (hsl 0 0 90))})
 
@@ -56,14 +57,22 @@
       (div
        {}
        (div
-        {:style (merge style-element-name (if (= base-path focus-path) style-focus)),
+        {:style (let [s (:style node-tree)]
+           (merge
+            style-element-name
+            (if (= base-path focus-path) style-focus)
+            (if (contains? s :color) {:color (:color s)})
+            (if (contains? s :background-color) {:background-color (:background-color s)}))),
          :on {:click (on-focus base-path)}}
         (let [el-name (:name node-tree)]
           (<>
            span
-           (if (string? el-name)
-             (subs el-name 1)
-             (if (keyword? el-name) (name el-name) (do (println "nil" node-tree) "nil")))
+           (str
+            (if (string? el-name)
+              (subs el-name 1)
+              (if (keyword? el-name) (name el-name) "nil"))
+            (let [p (:props node-tree)]
+              (if (contains? p :inner-text) (str "= " (:inner-text p)))))
            nil))))
       (div
        {:style style-children}
