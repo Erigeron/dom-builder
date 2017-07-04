@@ -10,7 +10,7 @@
 
 (def style-nothing {:font-family "Josefin Sans", :font-size 14, :color (hsl 0 0 50)})
 
-(def style-el-name {:color :white, :background-color (hsl 240 80 60), :padding "0 8px"})
+(def style-el-name {:color :white, :background-color (hsl 240 80 80), :padding "0 8px"})
 
 (defn on-append [e d! m!] (d! :dom-modules/clipboard-append nil))
 
@@ -19,12 +19,12 @@
 (defcomp
  comp-clipboard
  (piece)
- (div
-  {}
-  (if (some? piece)
+ (if (some? piece)
+   (div
+    {}
     (<> span (str (name (:name piece)) ":" (count (:children piece))) style-el-name)
-    (<> span "Nothing here..." style-nothing))
-  (=< 8 nil)
-  (a {:inner-text "Append", :style style/click, :on {:click on-append}})
-  (=< 8 nil)
-  (a {:inner-text "Before", :style style/click, :on {:click on-before}})))
+    (=< 8 nil)
+    (a {:inner-text "Append", :style style/click, :on {:click on-append}})
+    (=< 8 nil)
+    (a {:inner-text "Before", :style style/click, :on {:click on-before}}))
+   (<> span "Nothing in clipboard." style-nothing)))

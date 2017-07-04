@@ -22,9 +22,12 @@
           {:prop (keyword k), :value (if (string/blank? v) nil v)})
          (m! ""))))))
 
-(def style-line {:cursor :pointer, :font-family "Menlo, monospace"})
+(def style-line
+  {:cursor :pointer, :font-family "Menlo, monospace", :font-size 12, :padding-left 8})
 
 (defn on-click [k v] (fn [e d! m!] (m! (str (name k) ": " v))))
+
+(def style-input {:font-size 12, :font-family "Menlo,monospace"})
 
 (defcomp
  comp-style
@@ -50,5 +53,5 @@
      (input
       {:value state,
        :placeholder "prop: value",
-       :style ui/input,
+       :style (merge ui/input style-input),
        :on {:input on-input, :keydown (on-keydown state)}})))))

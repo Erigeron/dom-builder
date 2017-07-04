@@ -10,4 +10,4 @@
    :outline :none,
    :color (hsl 240 90 60)})
 
-(def title {:font-family "Josefin Sans", :font-size 32, :font-weight 100})
+(def title {:font-family "Josefin Sans", :font-size 20, :font-weight 100})

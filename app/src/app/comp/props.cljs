@@ -19,9 +19,12 @@
         (d! :dom-modules/set-prop {:prop (keyword k), :value (if (string/blank? v) nil v)})
         (m! "")))))
 
-(def style-line {:cursor :pointer, :font-family "Menlo, monospace"})
+(def style-line
+  {:cursor :pointer, :font-family "Menlo, monospace", :font-size 12, :padding-left 8})
 
 (defn on-click [k v] (fn [e d! m!] (m! (str (name k) ": " v))))
+
+(def style-input {:font-size 12, :font-family "Menlo,monospace"})
 
 (defcomp
  comp-props
@@ -47,5 +50,5 @@
      (input
       {:placeholder "prop: value",
        :value state,
-       :style ui/input,
+       :style (merge ui/input style-input),
        :on {:input on-input, :keydown (on-keydown state)}})))))

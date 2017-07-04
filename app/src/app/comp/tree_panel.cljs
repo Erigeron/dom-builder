@@ -48,7 +48,7 @@
    (=< 8 nil)
    (a {:inner-text "Rename", :style style/click, :on {:click (on-rename state)}})))
 
-(def style-panel {:overflow :auto, :padding 8})
+(def style-panel {:overflow :auto, :padding "0 8px"})
 
 (defcomp
  comp-tree-panel
@@ -59,9 +59,9 @@
    (div
     {:style (merge (:tree layout/editor) style-panel)}
     (<> span "Tree" style/title)
-    (div {} (<> code path nil))
     (render-operations state path)
     (=< nil 8)
     (comp-clipboard clipboard)
-    (=< nil 16)
+    (comment div {} (<> code path nil))
+    (=< nil 8)
     (if (some? tree-node) (comp-tree tree-node [(:id tree-node)] path)))))

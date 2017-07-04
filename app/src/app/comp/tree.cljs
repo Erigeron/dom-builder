@@ -15,10 +15,8 @@
    :display :inline-block,
    :padding "0 8px",
    :cursor :pointer,
-   :line-height "1.6em",
    :font-size 12,
-   :margin 1,
-   :border-radius "8px"})
+   :margin 1})
 
 (def style-children {:padding-left 16, :border-left (str "1px solid " (hsl 0 0 90))})
 
@@ -30,7 +28,11 @@
    :cursor :pointer,
    :color :white,
    :line-height "1.5em",
-   :font-size 12})
+   :font-size 12,
+   :white-space :nowrap,
+   :max-width 200,
+   :overflow :hidden,
+   :text-overflow :ellipsis})
 
 (defn on-focus [path] (fn [e d! m!] (d! :dom-modules/focus path)))
 
@@ -57,12 +59,7 @@
       (div
        {}
        (div
-        {:style (let [s (:style node-tree)]
-           (merge
-            style-element-name
-            (if (= base-path focus-path) style-focus)
-            (if (contains? s :color) {:color (:color s)})
-            (if (contains? s :background-color) {:background-color (:background-color s)}))),
+        {:style (merge style-element-name (if (= base-path focus-path) style-focus)),
          :on {:click (on-focus base-path)}}
         (let [el-name (:name node-tree)]
           (<>
@@ -72,7 +69,7 @@
               (subs el-name 1)
               (if (keyword? el-name) (name el-name) "nil"))
             (let [p (:props node-tree)]
-              (if (contains? p :inner-text) (str "= " (:inner-text p)))))
+              (if (contains? p :inner-text) (str " " (pr-str (:inner-text p))))))
            nil))))
       (div
        {:style style-children}

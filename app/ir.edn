@@ -80,15 +80,9 @@
                                               ["div"
                                                ["{}"
                                                 [":style"
-                                                 ["let"
-                                                  [["s" [":style" "node-tree"]]]
-                                                  ["merge"
-                                                   "style-element-name"
-                                                   ["if" ["=" "base-path" "focus-path"] "style-focus"]
-                                                   ["if" ["contains?" "s" ":color"] ["{}" [":color" [":color" "s"]]]]
-                                                   ["if"
-                                                    ["contains?" "s" ":background-color"]
-                                                    ["{}" [":background-color" [":background-color" "s"]]]]]]]
+                                                 ["merge"
+                                                  "style-element-name"
+                                                  ["if" ["=" "base-path" "focus-path"] "style-focus"]]]
                                                 [":on" ["{}" [":click" ["on-focus" "base-path"]]]]]
                                                ["let"
                                                 [["el-name" [":name" "node-tree"]]]
@@ -103,7 +97,7 @@
                                                    [["p" [":props" "node-tree"]]]
                                                    ["if"
                                                     ["contains?" "p" ":inner-text"]
-                                                    ["str" "|= " [":inner-text" "p"]]]]]
+                                                    ["str" "| " ["pr-str" [":inner-text" "p"]]]]]]
                                                  "nil"]]]]
                                              ["div"
                                               ["{}" [":style" "style-children"]]
@@ -124,10 +118,8 @@
                                                    [":display" ":inline-block"]
                                                    [":padding" "|0 8px"]
                                                    [":cursor" ":pointer"]
-                                                   [":line-height" "|1.6em"]
                                                    [":font-size" "12"]
-                                                   [":margin" "1"]
-                                                   [":border-radius" "|8px"]]],
+                                                   [":margin" "1"]]],
                              "style-children" ["def"
                                                "style-children"
                                                ["{}"
@@ -143,7 +135,11 @@
                                                     [":cursor" ":pointer"]
                                                     [":color" ":white"]
                                                     [":line-height" "|1.5em"]
-                                                    [":font-size" "12"]]],
+                                                    [":font-size" "12"]
+                                                    [":white-space" ":nowrap"]
+                                                    [":max-width" "200"]
+                                                    [":overflow" ":hidden"]
+                                                    [":text-overflow" ":ellipsis"]]],
                              "on-focus" ["defn"
                                          "on-focus"
                                          ["path"]
@@ -369,7 +365,7 @@
                                                 ["{}"
                                                  [":placeholder" "|prop: value"]
                                                  [":value" "state"]
-                                                 [":style" "ui/input"]
+                                                 [":style" ["merge" "ui/input" "style-input"]]
                                                  [":on"
                                                   ["{}" [":input" "on-input"] [":keydown" ["on-keydown" "state"]]]]]]]]]],
                               "on-input" ["defn" "on-input" ["e" "d!" "m!"] ["m!" [":value" "e"]]],
@@ -391,11 +387,18 @@
                                                ["m!" "|"]]]]],
                               "style-line" ["def"
                                             "style-line"
-                                            ["{}" [":cursor" ":pointer"] [":font-family" "|Menlo, monospace"]]],
+                                            ["{}"
+                                             [":cursor" ":pointer"]
+                                             [":font-family" "|Menlo, monospace"]
+                                             [":font-size" "12"]
+                                             [":padding-left" "8"]]],
                               "on-click" ["defn"
                                           "on-click"
                                           ["k" "v"]
-                                          ["fn" ["e" "d!" "m!"] ["m!" ["str" ["name" "k"] "|: " "v"]]]]},
+                                          ["fn" ["e" "d!" "m!"] ["m!" ["str" ["name" "k"] "|: " "v"]]]],
+                              "style-input" ["def"
+                                             "style-input"
+                                             ["{}" [":font-size" "12"] [":font-family" "|Menlo,monospace"]]]},
                        :procs []},
          "comp.container" {:ns ["ns"
                                 "app.comp.container"
@@ -493,7 +496,7 @@
                                    [":color" ["hsl" "240" "90" "60"]]]],
                          "title" ["def"
                                   "title"
-                                  ["{}" [":font-family" "|Josefin Sans"] [":font-size" "32"] [":font-weight" "100"]]]},
+                                  ["{}" [":font-family" "|Josefin Sans"] [":font-size" "20"] [":font-weight" "100"]]]},
                   :procs []},
          "main" {:ns ["ns"
                       "app.main"
@@ -736,10 +739,10 @@
                            :defs {"comp-clipboard" ["defcomp"
                                                     "comp-clipboard"
                                                     ["piece"]
-                                                    ["div"
-                                                     ["{}"]
-                                                     ["if"
-                                                      ["some?" "piece"]
+                                                    ["if"
+                                                     ["some?" "piece"]
+                                                     ["div"
+                                                      ["{}"]
                                                       ["<>"
                                                        "span"
                                                        ["str"
@@ -747,19 +750,19 @@
                                                         "|:"
                                                         ["count" [":children" "piece"]]]
                                                        "style-el-name"]
-                                                      ["<>" "span" "|Nothing here..." "style-nothing"]]
-                                                     ["=<" "8" "nil"]
-                                                     ["a"
-                                                      ["{}"
-                                                       [":inner-text" "|Append"]
-                                                       [":style" "style/click"]
-                                                       [":on" ["{}" [":click" "on-append"]]]]]
-                                                     ["=<" "8" "nil"]
-                                                     ["a"
-                                                      ["{}"
-                                                       [":inner-text" "|Before"]
-                                                       [":style" "style/click"]
-                                                       [":on" ["{}" [":click" "on-before"]]]]]]],
+                                                      ["=<" "8" "nil"]
+                                                      ["a"
+                                                       ["{}"
+                                                        [":inner-text" "|Append"]
+                                                        [":style" "style/click"]
+                                                        [":on" ["{}" [":click" "on-append"]]]]]
+                                                      ["=<" "8" "nil"]
+                                                      ["a"
+                                                       ["{}"
+                                                        [":inner-text" "|Before"]
+                                                        [":style" "style/click"]
+                                                        [":on" ["{}" [":click" "on-before"]]]]]]
+                                                     ["<>" "span" "|Nothing in clipboard." "style-nothing"]]],
                                   "style-nothing" ["def"
                                                    "style-nothing"
                                                    ["{}"
@@ -770,7 +773,7 @@
                                                    "style-el-name"
                                                    ["{}"
                                                     [":color" ":white"]
-                                                    [":background-color" ["hsl" "240" "80" "60"]]
+                                                    [":background-color" ["hsl" "240" "80" "80"]]
                                                     [":padding" "|0 8px"]]],
                                   "on-append" ["defn"
                                                "on-append"
@@ -806,7 +809,7 @@
                                                  [":on" ["{}" [":click" "on-home"]]]
                                                  [":style"
                                                   ["merge" [":logo" "layout/header"] ["{}" [":cursor" ":pointer"]]]]]
-                                                ["<>" "span" "|Cumulo" "nil"]]
+                                                ["<>" "span" "|Builder" "nil"]]
                                                ["div"
                                                 ["{}"
                                                  [":on" ["{}" [":click" "on-preview"]]]
@@ -817,7 +820,7 @@
                                                 ["{}"
                                                  [":style" ["merge" [":profile" "layout/header"] "style-pointer"]]
                                                  [":on" ["{}" [":click" "on-profile"]]]]
-                                                ["<>" "span" ["if" "logged-in?" "|Me" "|Guest"] "nil"]]]],
+                                                ["<>" "span" ["if" "logged-in?" "|Profile" "|Guest"] "nil"]]]],
                                "style-pointer" ["def" "style-pointer" ["{}" [":cursor" "|pointer"]]],
                                "style-header" ["def"
                                                "style-header"
@@ -826,10 +829,12 @@
                                                 [":grid" "layout/header"]
                                                 ["{}"
                                                  [":height" "48"]
-                                                 [":background-color" "colors/motif"]
                                                  [":padding" "|0 16px"]
                                                  [":font-size" "16"]
-                                                 [":color" ":white"]]]],
+                                                 [":color" ["hsl" "0" "0" "40"]]
+                                                 [":font-weight" "100"]
+                                                 [":font-family" "|Josefin Sans"]
+                                                 [":border-bottom" ["str" "|1px solid " ["hsl" "0" "0" "90"]]]]]],
                                "on-home" ["defn"
                                           "on-home"
                                           ["e" "d!" "m!"]
@@ -911,7 +916,9 @@
                                                            [":style" "style/click"]
                                                            [":on" ["{}" [":click" ["on-rename" "state"]]]]]]]],
                                    "on-copy" ["defn" "on-copy" ["e" "d!" "m!"] ["d!" ":dom-modules/copy" "nil"]],
-                                   "style-panel" ["def" "style-panel" ["{}" [":overflow" ":auto"] [":padding" "8"]]],
+                                   "style-panel" ["def"
+                                                  "style-panel"
+                                                  ["{}" [":overflow" ":auto"] [":padding" "|0 8px"]]],
                                    "comp-tree-panel" ["defcomp"
                                                       "comp-tree-panel"
                                                       ["states" "dom-modules" "focus" "clipboard"]
@@ -923,11 +930,11 @@
                                                         ["{}"
                                                          [":style" ["merge" [":tree" "layout/editor"] "style-panel"]]]
                                                         ["<>" "span" "|Tree" "style/title"]
-                                                        ["div" ["{}"] ["<>" "code" "path" "nil"]]
                                                         ["render-operations" "state" "path"]
                                                         ["=<" "nil" "8"]
                                                         ["comp-clipboard" "clipboard"]
-                                                        ["=<" "nil" "16"]
+                                                        ["--" "div" ["{}"] ["<>" "code" "path" "nil"]]
+                                                        ["=<" "nil" "8"]
                                                         ["if"
                                                          ["some?" "tree-node"]
                                                          ["comp-tree" "tree-node" ["[]" [":id" "tree-node"]] "path"]]]]],
@@ -998,7 +1005,7 @@
                                                 ["{}"
                                                  [":value" "state"]
                                                  [":placeholder" "|prop: value"]
-                                                 [":style" "ui/input"]
+                                                 [":style" ["merge" "ui/input" "style-input"]]
                                                  [":on"
                                                   ["{}" [":input" "on-input"] [":keydown" ["on-keydown" "state"]]]]]]]]]],
                               "on-input" ["defn" "on-input" ["e" "d!" "m!"] ["m!" [":value" "e"]]],
@@ -1021,11 +1028,18 @@
                                                 ["m!" "|"]]]]]],
                               "style-line" ["def"
                                             "style-line"
-                                            ["{}" [":cursor" ":pointer"] [":font-family" "|Menlo, monospace"]]],
+                                            ["{}"
+                                             [":cursor" ":pointer"]
+                                             [":font-family" "|Menlo, monospace"]
+                                             [":font-size" "12"]
+                                             [":padding-left" "8"]]],
                               "on-click" ["defn"
                                           "on-click"
                                           ["k" "v"]
-                                          ["fn" ["e" "d!" "m!"] ["m!" ["str" ["name" "k"] "|: " "v"]]]]},
+                                          ["fn" ["e" "d!" "m!"] ["m!" ["str" ["name" "k"] "|: " "v"]]]],
+                              "style-input" ["def"
+                                             "style-input"
+                                             ["{}" [":font-size" "12"] [":font-family" "|Menlo,monospace"]]]},
                        :procs []},
          "comp.dom-modules" {:ns ["ns"
                                   "app.comp.dom-modules"

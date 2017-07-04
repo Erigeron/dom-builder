@@ -17,10 +17,12 @@
    (:header layout/workspace)
    (:grid layout/header)
    {:height 48,
-    :background-color colors/motif,
     :padding "0 16px",
     :font-size 16,
-    :color :white}))
+    :color (hsl 0 0 40),
+    :font-weight 100,
+    :font-family "Josefin Sans",
+    :border-bottom (str "1px solid " (hsl 0 0 90))}))
 
 (defn on-home [e d! m!] (d! :router/change {:name :home, :data nil, :router nil}))
 
@@ -33,10 +35,10 @@
   {:style style-header}
   (div
    {:on {:click on-home}, :style (merge (:logo layout/header) {:cursor :pointer})}
-   (<> span "Cumulo" nil))
+   (<> span "Builder" nil))
   (div
    {:on {:click on-preview}, :style (merge (:logo layout/editor) {:cursor :pointer})}
    (<> span "Preview" nil))
   (div
    {:style (merge (:profile layout/header) style-pointer), :on {:click on-profile}}
-   (<> span (if logged-in? "Me" "Guest") nil))))
+   (<> span (if logged-in? "Profile" "Guest") nil))))
