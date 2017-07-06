@@ -21,7 +21,7 @@ Build server:
 
 ```bash
 cd server/
-yarn build
+yarn compile
 node target/main.js
 ```
 
