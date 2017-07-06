@@ -11,7 +11,7 @@ https://github.com/Cumulo/cumulo-workflow
 Build app:
 
 ```bash
-cd app
+cd app/
 yarn
 yarn build
 yarn serve
@@ -20,6 +20,7 @@ yarn serve
 Build server:
 
 ```bash
+cd server/
 yarn build
 node target/main.js
 ```
