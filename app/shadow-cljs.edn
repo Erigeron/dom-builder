@@ -1,12 +1,13 @@
 
 {:source-paths ["src"]
  :dependencies [[mvc-works/hsl          "0.1.2"]
-                [respo/message          "0.2.0"]
-                [mvc-works/shell-page   "0.1.2"]
-                [cumulo/recollect       "0.1.7"]
-                [respo/ui               "0.1.9"]
-                [respo                  "0.5.13"]
-                [org.clojure/core.async "0.3.443"]]
+                [respo/message          "0.2.1"]
+                [mvc-works/shell-page   "0.1.6"]
+                [cumulo/recollect       "0.4.1"]
+                [respo/ui               "0.2.0"]
+                [respo                  "0.7.1"]
+                [org.clojure/core.async "0.3.465"]]
+ :open-file-command ["subl" ["%s:%s:%s" :file :line :column]]
  :builds {:browser {:output-dir "target/browser"
                     :asset-path "/browser"
                     :target :browser
@@ -15,8 +16,12 @@
                               :lib {:entries [respo.core respo.macros
                                               respo.comp.inspect]}}
                     :devtools {:after-load app.main/reload!
-                               :preloads [shadow.cljs.devtools.client.hud]}
-                    :release {:output-dir "dist/"}}
+                               :preloads [shadow.cljs.devtools.client.hud]
+                               :http-root "target"
+                               :http-port 8080}
+                    :release {:output-dir "dist/"
+                              :module-hash-names 8
+                              :build-options {:manifest-name "assets.edn"}}}
           :ssr {:target :node-script
                 :output-to "target/ssr.js"
                 :main app.render/main!

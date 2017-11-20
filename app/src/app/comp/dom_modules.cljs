@@ -1,6 +1,6 @@
 
 (ns app.comp.dom-modules
-  (:require-macros [respo.macros :refer [defcomp <> span div a input button]])
+  (:require-macros [respo.macros :refer [defcomp list-> <> span div a input button]])
   (:require [clojure.string :as string]
             [hsl.core :refer [hsl]]
             [respo-ui.style :as ui]
@@ -23,7 +23,8 @@
 (def style-entry {:padding "0 8px", :cursor :pointer})
 
 (defn render-module-list [dom-modules focus]
-  (div
+  (list->
+   :div
    {:style (merge style-list)}
    (->> dom-modules
         (map

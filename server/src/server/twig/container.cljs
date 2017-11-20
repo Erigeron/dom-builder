@@ -1,6 +1,6 @@
 
 (ns server.twig.container
-  (:require [recollect.bunch :refer [create-twig]] [server.twig.user :refer [twig-user]]))
+  (:require [recollect.twig :refer [create-twig]] [server.twig.user :refer [twig-user]]))
 
 (def twig-container
   (create-twig

@@ -1,6 +1,6 @@
 
 (ns app.comp.props
-  (:require-macros [respo.macros :refer [defcomp <> span div a input]])
+  (:require-macros [respo.macros :refer [defcomp list-> <> span div a input]])
   (:require [clojure.string :as string]
             [hsl.core :refer [hsl]]
             [respo-ui.style :as ui]
@@ -33,7 +33,8 @@
    (div
     {:style (:props layout/editor)}
     (<> span "Props" style/title)
-    (div
+    (list->
+     :div
      {}
      (->> props
           (map

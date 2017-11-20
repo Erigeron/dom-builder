@@ -4,8 +4,8 @@
             [cljs.reader :as reader]
             [cljs.core.async :refer [chan >!]]
             [server.twig.container :refer [twig-container]]
-            [recollect.diff :refer [diff-bunch]]
-            [recollect.bunch :refer [render-bunch]])
+            [recollect.diff :refer [diff-twig]]
+            [recollect.twig :refer [render-twig]])
   (:require-macros [cljs.core.async.macros :refer [go]]))
 
 (defonce socket-registry (atom {}))
@@ -53,11 +53,11 @@
   (doseq [session-entry (:sessions db)]
     (let [[session-id session] session-entry
           old-store (or (get @client-caches session-id) nil)
-          new-store (render-bunch (twig-container db session) old-store)
+          new-store (render-twig (twig-container db session) old-store)
           *changes (atom [])
           collect! (fn [x] (swap! *changes conj x))
           socket (get @socket-registry session-id)]
-      (diff-bunch collect! [] old-store new-store)
+      (diff-twig old-store new-store {:key :id})
       (.info js/console "Changes for" session-id ":" (clj->js @*changes))
       (if (and (not= *changes []) (some? socket))
         (do

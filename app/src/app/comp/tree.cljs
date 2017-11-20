@@ -1,6 +1,6 @@
 
 (ns app.comp.tree
-  (:require-macros [respo.macros :refer [defcomp <> span div a button]])
+  (:require-macros [respo.macros :refer [defcomp list-> <> span div a button]])
   (:require [hsl.core :refer [hsl]]
             [respo-ui.style :as ui]
             [respo-ui.style.colors :as colors]
@@ -71,7 +71,8 @@
             (let [p (:props node-tree)]
               (if (contains? p :inner-text) (str " " (pr-str (:inner-text p))))))
            nil))))
-      (div
+      (list->
+       :div
        {:style style-children}
        (->> (:children node-tree)
             (map-indexed
