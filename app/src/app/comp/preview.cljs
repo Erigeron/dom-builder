@@ -27,7 +27,7 @@
             (map-indexed
              (fn [idx child]
                [idx (render-element child paths dom-modules (conj path idx) (inc level))])))))
-    nil))
+    (span {})))
 
 (def style-close
   {:position :fixed,
