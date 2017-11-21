@@ -1,10 +1,10 @@
 
 (ns app.comp.preview
-  (:require-macros [respo.macros :refer [defcomp <> span div a]])
   (:require [hsl.core :refer [hsl]]
             [respo-ui.style :as ui]
             [respo-ui.style.colors :as colors]
-            [respo.core :refer [create-comp create-element]]
+            [respo.core :refer [create-comp create-element create-list-element]]
+            [respo.macros :refer [defcomp list-> <> span div a]]
             [respo.comp.space :refer [=<]]
             [app.style.layout :as layout]))
 
@@ -18,7 +18,7 @@
     (if (= :dom-module (:type tree))
       (let [nested-module (get dom-modules (:id tree))]
         (recur (:tree nested-module) paths dom-modules [(:id tree) :tree] (inc level)))
-      (create-element
+      (create-list-element
        (:name tree)
        (merge
         (:props tree)

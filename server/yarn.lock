@@ -24,6 +24,10 @@ assert@^1.1.1:
   dependencies:
     util "0.10.3"
 
+async-limiter@~1.0.0:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/async-limiter/-/async-limiter-1.0.0.tgz#78faed8c3d074ab81f22b4e985d79e8738f720f8"
+
 babel-code-frame@^6.26.0:
   version "6.26.0"
   resolved "https://registry.yarnpkg.com/babel-code-frame/-/babel-code-frame-6.26.0.tgz#63fd43f7dc1e3bb7ce35947db8fe369a3f58c74b"
@@ -1118,9 +1122,9 @@ shadow-cljs-jar@1.1.0:
   version "1.1.0"
   resolved "https://registry.yarnpkg.com/shadow-cljs-jar/-/shadow-cljs-jar-1.1.0.tgz#17fee311c5832b12eec65072b5d265f1c35ff67a"
 
-shadow-cljs@^2.0.94:
-  version "2.0.94"
-  resolved "https://registry.yarnpkg.com/shadow-cljs/-/shadow-cljs-2.0.94.tgz#3e731c73d7a328f5af2371334947ba9c43cfcb8c"
+shadow-cljs@^2.0.95:
+  version "2.0.95"
+  resolved "https://registry.yarnpkg.com/shadow-cljs/-/shadow-cljs-2.0.95.tgz#ae8c9b6fd19704cf530ee201551a9ca6e99c0d04"
   dependencies:
     babel-core "^6.26.0"
     babel-preset-env "^1.6.0"
@@ -1150,9 +1154,19 @@ source-map-support@^0.4.15:
   dependencies:
     source-map "^0.5.6"
 
+source-map-support@^0.5.0:
+  version "0.5.0"
+  resolved "https://registry.yarnpkg.com/source-map-support/-/source-map-support-0.5.0.tgz#2018a7ad2bdf8faf2691e5fddab26bed5a2bacab"
+  dependencies:
+    source-map "^0.6.0"
+
 source-map@^0.5.6:
   version "0.5.6"
   resolved "https://registry.yarnpkg.com/source-map/-/source-map-0.5.6.tgz#75ce38f52bf0733c5a7f0c118d81334a2bb5f412"
+
+source-map@^0.6.0:
+  version "0.6.1"
+  resolved "https://registry.yarnpkg.com/source-map/-/source-map-0.6.1.tgz#74722af32e9614e9c287a8d0bbde48b5e2f1a263"
 
 stream-browserify@^2.0.1:
   version "2.0.1"
@@ -1230,9 +1244,9 @@ util@0.10.3, util@^0.10.3:
   dependencies:
     inherits "2.0.1"
 
-uws@^8.14.0:
-  version "8.14.0"
-  resolved "https://registry.yarnpkg.com/uws/-/uws-8.14.0.tgz#acc1488d13ecb23fe2f942a7eafb06681fa91431"
+uws@^9.14.0:
+  version "9.14.0"
+  resolved "https://registry.yarnpkg.com/uws/-/uws-9.14.0.tgz#fac8386befc33a7a3705cbd58dc47b430ca4dd95"
 
 vm-browserify@0.0.4:
   version "0.0.4"
@@ -1245,6 +1259,14 @@ ws@^3.0.0:
   resolved "https://registry.yarnpkg.com/ws/-/ws-3.0.0.tgz#98ddb00056c8390cb751e7788788497f99103b6c"
   dependencies:
     safe-buffer "~5.0.1"
+    ultron "~1.1.0"
+
+ws@^3.3.2:
+  version "3.3.2"
+  resolved "https://registry.yarnpkg.com/ws/-/ws-3.3.2.tgz#96c1d08b3fefda1d5c1e33700d3bfaa9be2d5608"
+  dependencies:
+    async-limiter "~1.0.0"
+    safe-buffer "~5.1.0"
     ultron "~1.1.0"
 
 xtend@^4.0.0:

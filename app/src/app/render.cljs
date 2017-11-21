@@ -7,7 +7,7 @@
 
 (def base-info
   {:title "Cumulo",
-   :icon "http://logo.cumulo.org/cumulo.png",
+   :icon "http://cdn.tiye.me/logo/cumulo.png",
    :ssr nil,
    :inline-styles [(slurp "entry/main.css")]})
 
@@ -31,7 +31,7 @@
      (merge
       base-info
       {:styles ["http://cdn.tiye.me/favored-fonts/main.css"],
-       :scripts (map #(-> :output-name prefix-cdn) assets)}))))
+       :scripts (map #(-> % :output-name prefix-cdn) assets)}))))
 
 (defn main! []
   (if (= js/process.env.env "dev")

@@ -5,7 +5,7 @@
             [hsl.core :refer [hsl]]
             [respo-ui.style :as ui]
             [respo-ui.style.colors :as colors]
-            [respo.core :refer [create-comp]]
+            [respo.core :refer [create-comp create-list-element]]
             [respo.comp.space :refer [=<]]
             [app.style.layout :as layout]
             [app.style :as style]))
@@ -36,7 +36,8 @@
    (div
     {:style (:style layout/editor)}
     (<> span "Style" style/title)
-    (div
+    (create-list-element
+     :div
      {}
      (->> style-map
           (map
