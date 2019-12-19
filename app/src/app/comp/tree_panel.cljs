@@ -12,22 +12,22 @@
             [app.comp.tree :refer [comp-tree]]
             [app.comp.clipboard :refer [comp-clipboard]]))
 
-(defn on-input [e d! m!] (m! (:value e)))
-
-(defn on-before [el-name] (fn [e d! m!] (d! :dom-modules/before-element el-name) (m! "")))
-
-(defn on-copy [e d! m!] (d! :dom-modules/copy nil))
-
 (defn on-append [el-name]
   (fn [e d! m!]
     (d! :dom-modules/append-element (if (string/blank? el-name) "div" el-name))
     (m! "")))
 
+(defn on-before [el-name] (fn [e d! m!] (d! :dom-modules/before-element el-name) (m! "")))
+
+(defn on-copy [e d! m!] (d! :dom-modules/copy nil))
+
+(defn on-delete [path] (fn [e d! m!] (d! :dom-modules/delete-element path)))
+
+(defn on-input [e d! m!] (m! (:value e)))
+
 (defn on-rename [text]
   (fn [e d! m!]
     (if (not (string/blank? text)) (do (d! :dom-modules/rename-element text) (m! "")))))
-
-(defn on-delete [path] (fn [e d! m!] (d! :dom-modules/delete-element path)))
 
 (defn render-operations [state path]
   (div

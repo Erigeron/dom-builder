@@ -9,14 +9,7 @@
             [app.style.layout :as layout]
             [app.style :as style]))
 
-(def style-module-name
-  {:background-color (hsl 40 80 60),
-   :color :white,
-   :display :inline-block,
-   :padding "0 8px",
-   :cursor :pointer,
-   :font-size 12,
-   :margin 1})
+(defn on-focus [path] (fn [e d! m!] (d! :dom-modules/focus path)))
 
 (def style-children {:padding-left 16, :border-left (str "1px solid " (hsl 0 0 90))})
 
@@ -34,9 +27,16 @@
    :overflow :hidden,
    :text-overflow :ellipsis})
 
-(defn on-focus [path] (fn [e d! m!] (d! :dom-modules/focus path)))
-
 (def style-focus {:outline (str "1px dashed " (hsl 240 80 60))})
+
+(def style-module-name
+  {:background-color (hsl 40 80 60),
+   :color :white,
+   :display :inline-block,
+   :padding "0 8px",
+   :cursor :pointer,
+   :font-size 12,
+   :margin 1})
 
 (defcomp
  comp-tree

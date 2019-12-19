@@ -7,15 +7,18 @@
             [app.network :refer [send! setup-socket!]]
             [app.schema :as schema]))
 
-(def ssr? (some? (.querySelector js/document "meta.respo-ssr")))
-
 (defonce *states (atom {}))
+
+(defonce *store (atom nil))
 
 (defn dispatch! [op op-data]
   (.info js/console "Dispatch" (str op) (clj->js op-data))
   (if (= op :states) (reset! *states ((mutate op-data) @*states)) (send! op op-data)))
 
-(defonce *store (atom nil))
+(def mount-target (.querySelector js/document ".app"))
+
+(defn render-app! [renderer]
+  (renderer mount-target (comp-container @*states @*store) dispatch!))
 
 (defn simulate-login! []
   (let [raw (.getItem js/localStorage (:storage-key schema/configs))]
@@ -23,10 +26,7 @@
       (do (println "Found storage.") (dispatch! :user/log-in (read-string raw)))
       (do (println "Found no storage.")))))
 
-(def mount-target (.querySelector js/document ".app"))
-
-(defn render-app! [renderer]
-  (renderer mount-target (comp-container @*states @*store) dispatch!))
+(def ssr? (some? (.querySelector js/document "meta.respo-ssr")))
 
 (defn main! []
   (if ssr? (render-app! realize-ssr!))

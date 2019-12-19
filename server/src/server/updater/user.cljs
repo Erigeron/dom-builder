@@ -1,23 +1,6 @@
 
 (ns server.updater.user (:require [server.util :refer [find-first]]))
 
-(defn sign-up [db op-data session-id op-id op-time]
-  (let [[username password] op-data
-        maybe-user (find-first (fn [user] (= username (:name user))) (vals (:users db)))]
-    (if (some? maybe-user)
-      (update-in
-       db
-       [:sessions session-id :notifications]
-       (fn [notifications]
-         (conj
-          notifications
-          {:id op-id, :kind :attentive, :text (str "Name is token: " username)})))
-      (-> db
-          (assoc-in [:sessions session-id :user-id] op-id)
-          (assoc-in
-           [:users op-id]
-           {:id op-id, :name username, :nickname username, :password password, :avatar nil})))))
-
 (defn log-in [db op-data session-id op-id op-time]
   (let [[username password] op-data
         maybe-user (find-first
@@ -47,3 +30,20 @@
 
 (defn log-out [db op-data session-id op-id op-time]
   (assoc-in db [:sessions session-id :user-id] nil))
+
+(defn sign-up [db op-data session-id op-id op-time]
+  (let [[username password] op-data
+        maybe-user (find-first (fn [user] (= username (:name user))) (vals (:users db)))]
+    (if (some? maybe-user)
+      (update-in
+       db
+       [:sessions session-id :notifications]
+       (fn [notifications]
+         (conj
+          notifications
+          {:id op-id, :kind :attentive, :text (str "Name is token: " username)})))
+      (-> db
+          (assoc-in [:sessions session-id :user-id] op-id)
+          (assoc-in
+           [:users op-id]
+           {:id op-id, :name username, :nickname username, :password password, :avatar nil})))))

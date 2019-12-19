@@ -16,9 +16,9 @@
 
 (def style-alert {:font-family "Josefin Sans", :font-weight 100, :font-size 40})
 
-(def style-debugger {:bottom 0, :left 0, :max-width "100%"})
-
 (def style-contaier (merge (:grid layout/workspace) {}))
+
+(def style-debugger {:bottom 0, :left 0, :max-width "100%"})
 
 (defcomp
  comp-container

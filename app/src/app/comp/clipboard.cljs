@@ -8,13 +8,13 @@
             [respo.comp.space :refer [=<]]
             [app.style :as style]))
 
-(def style-nothing {:font-family "Josefin Sans", :font-size 14, :color (hsl 0 0 50)})
-
-(def style-el-name {:color :white, :background-color (hsl 240 80 80), :padding "0 8px"})
-
 (defn on-append [e d! m!] (d! :dom-modules/clipboard-append nil))
 
 (defn on-before [e d! m!] (d! :dom-modules/clipboard-before nil))
+
+(def style-el-name {:color :white, :background-color (hsl 240 80 80), :padding "0 8px"})
+
+(def style-nothing {:font-family "Josefin Sans", :font-size 14, :color (hsl 0 0 50)})
 
 (defcomp
  comp-clipboard

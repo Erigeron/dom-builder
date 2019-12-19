@@ -7,10 +7,12 @@
             [respo.core :refer [create-comp]]
             [app.style.layout :as layout]))
 
+(defn on-home [e d! m!] (d! :router/change {:name :home, :data nil, :router nil}))
+
+(defn on-preview [e d! m!] (d! :router/change {:name :preview, :data nil, :router nil}))
+
 (defn on-profile [e dispatch!]
   (dispatch! :router/change {:name :profile, :params nil, :router nil}))
-
-(def style-pointer {:cursor "pointer"})
 
 (def style-header
   (merge
@@ -24,9 +26,7 @@
     :font-family "Josefin Sans",
     :border-bottom (str "1px solid " (hsl 0 0 90))}))
 
-(defn on-home [e d! m!] (d! :router/change {:name :home, :data nil, :router nil}))
-
-(defn on-preview [e d! m!] (d! :router/change {:name :preview, :data nil, :router nil}))
+(def style-pointer {:cursor "pointer"})
 
 (defcomp
  comp-header

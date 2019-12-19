@@ -10,17 +10,22 @@
             [app.style.layout :as layout]
             [app.style :as style]))
 
-(defn on-input [e d! m!] (m! (:value e)))
-
 (defn on-choose [module-id] (fn [e d! m!] (d! :dom-modules/choose module-id)))
+
+(defn on-create [text]
+  (fn [e d! m!] (if (not (string/blank? text)) (do (d! :dom-modules/create text) (m! "")))))
+
+(defn on-delete [e d! m!] (d! :dom-modules/delete-module nil))
+
+(defn on-input [e d! m!] (m! (:value e)))
 
 (defn on-insert [module-id] (fn [e d! m!] (d! :dom-modules/insert-module module-id)))
 
-(def style-list {:overflow :auto, :max-height 400})
+(def style-entry {:padding "0 8px", :cursor :pointer})
 
 (def style-highlight {:background-color (hsl 240 40 96)})
 
-(def style-entry {:padding "0 8px", :cursor :pointer})
+(def style-list {:overflow :auto, :max-height 400})
 
 (defn render-module-list [dom-modules focus]
   (list->
@@ -37,11 +42,6 @@
                (<> span (:name m) nil)
                (=< 8 nil)
                (span {:inner-text "insert", :style style/click, :on {:click (on-insert k)}}))]))))))
-
-(defn on-delete [e d! m!] (d! :dom-modules/delete-module nil))
-
-(defn on-create [text]
-  (fn [e d! m!] (if (not (string/blank? text)) (do (d! :dom-modules/create text) (m! "")))))
 
 (defcomp
  comp-dom-modules

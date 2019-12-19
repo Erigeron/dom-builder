@@ -10,6 +10,8 @@
             [app.style.layout :as layout]
             [app.style :as style]))
 
+(defn on-click [k v] (fn [e d! m!] (m! (str (name k) ": " v))))
+
 (defn on-input [e d! m!] (m! (:value e)))
 
 (defn on-keydown [text]
@@ -22,12 +24,10 @@
           {:prop (keyword k), :value (if (string/blank? v) nil v)})
          (m! ""))))))
 
+(def style-input {:font-size 12, :font-family "Menlo,monospace"})
+
 (def style-line
   {:cursor :pointer, :font-family "Menlo, monospace", :font-size 12, :padding-left 8})
-
-(defn on-click [k v] (fn [e d! m!] (m! (str (name k) ": " v))))
-
-(def style-input {:font-size 12, :font-family "Menlo,monospace"})
 
 (defcomp
  comp-style
