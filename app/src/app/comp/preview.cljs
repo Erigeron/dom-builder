@@ -8,8 +8,7 @@
             [respo.comp.space :refer [=<]]
             [app.style.layout :as layout]))
 
-(def style-preview
-  (merge {:background-color (hsl 0 0 90), :color colors/texture, :overflow :auto}))
+(defn on-close [e d! m!] (d! :router/change {:name :home, :data nil}))
 
 (def style-highlight {:outline (str "1px dashed " (hsl 240 80 70))})
 
@@ -39,9 +38,10 @@
    :cursor :pointer,
    :color (hsl 0 0 20 0.5)})
 
-(defn on-close [e d! m!] (d! :router/change {:name :home, :data nil}))
-
 (def style-missing {:font-family "Josefin Sans", :font-weight 100, :font-size 32})
+
+(def style-preview
+  (merge {:background-color (hsl 0 0 90), :color colors/texture, :overflow :auto}))
 
 (defcomp
  comp-preview
