@@ -6,24 +6,7 @@ DOM Builder
 
 ### Develop
 
-https://github.com/Cumulo/cumulo-workflow
-
-Build app:
-
-```bash
-cd app/
-yarn
-yarn build
-yarn serve
-```
-
-Build server:
-
-```bash
-cd server/
-yarn compile
-node target/main.js
-```
+https://github.com/Cumulo/calcium-workflow
 
 ### License
 

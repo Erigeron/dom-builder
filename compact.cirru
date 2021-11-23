@@ -62,8 +62,7 @@
                   {}
                     :style $ merge style-module-name
                       if (= base-path focus-path) style-focus
-                    :on $ {}
-                      :click $ on-focus base-path
+                    :on-click $ on-focus base-path
                   <> (:name node-tree) nil
                 div
                   {} $ :style style-children
@@ -77,8 +76,7 @@
                     {}
                       :style $ merge style-element-name
                         if (= base-path focus-path) style-focus
-                      :on $ {}
-                        :click $ on-focus base-path
+                      :on-click $ on-focus base-path
                     let
                         el-name $ :name node-tree
                       <>
@@ -123,7 +121,7 @@
             :text-overflow :ellipsis
         |on-focus $ quote
           defn on-focus (path)
-            fn (e d! m!) (d! :dom-modules/focus path)
+            fn (e d!) (d! :dom-modules/focus path)
         |style-focus $ quote
           def style-focus $ {}
             :outline $ str "|1px dashed " (hsl 240 80 60)
@@ -144,19 +142,23 @@
             div
               {} $ :style style-header
               div
-                {} (:click on-home)
+                {}
+                  :on-click $ fn (e d!)
+                    d! :router/change $ {} (:name :home) (:data nil) (:router nil)
                   :style $ merge (:logo layout/header)
                     {} $ :cursor :pointer
                 <> |Builder nil
               div
-                {} (:click on-preview)
+                {}
+                  :on-click $ fn (e d!)
+                    d! :router/change $ {} (:name :preview) (:data nil) (:router nil)
                   :style $ merge (:logo layout/editor)
                     {} $ :cursor :pointer
                 <> |Preview nil
               div
                 {}
                   :style $ merge (:profile layout/header) style-pointer
-                  :click on-profile
+                  :on-click on-profile
                 <> (if logged-in? |Profile |Guest) nil
         |style-pointer $ quote
           def style-pointer $ {} (:cursor |pointer)
@@ -167,12 +169,6 @@
               :font-weight 100
               :font-family "|Josefin Sans"
               :border-bottom $ str "|1px solid " (hsl 0 0 90)
-        |on-home $ quote
-          defn on-home (e d! m!)
-            d! :router/change $ {} (:name :home) (:data nil) (:router nil)
-        |on-preview $ quote
-          defn on-preview (e d! m!)
-            d! :router/change $ {} (:name :preview) (:data nil) (:router nil)
     |app.comp.container $ {}
       :ns $ quote
         ns app.comp.container $ :require
@@ -208,8 +204,8 @@
                       module-id $ get-in session ([] :focus :module)
                       dom-module $ get dom-modules module-id
                     comp-preview dom-module dom-modules
-                      get-in session $ [] :focus :module
-                      :focuses store
+                      w-js-log $ get-in session ([] :focus :module)
+                      w-js-log $ :focuses store
                   div
                     {} $ :style (merge ui/global ui/fullscreen style-contaier)
                     comp-header $ :logged-in? store
@@ -454,42 +450,29 @@
       :defs $ {}
         |style-panel $ quote
           def style-panel $ {} (:overflow :auto) (:padding "|0 8px")
-        |on-copy $ quote
-          defn on-copy (e d! m!) (d! :dom-modules/copy nil)
-        |on-before $ quote
-          defn on-before (el-name)
-            fn (e d! m!) (d! :dom-modules/before-element el-name) (m! |)
-        |on-delete $ quote
-          defn on-delete (path)
-            fn (e d! m!) (d! :dom-modules/delete-element path)
-        |on-input $ quote
-          defn on-input (e d! m!)
-            m! $ :value e
         |render-operations $ quote
           defn render-operations (state cursor path)
             div ({})
               input $ {} (:placeholder "|Element, defaults to \"div\"") (:value state) (:style ui/input)
-                :on $ {} (:input on-input)
+                :on-input $ fn (e d!)
+                  d! cursor $ :value e
               =< 8 nil
               a $ {} (:inner-text |Append) (:style style/click)
-                :on $ {}
-                  :click $ fn (e d!)
-                    d! :dom-modules/append-element $ if (blank? state) |div state
-                    d! cursor |
+                :on-click $ fn (e d!)
+                  d! :dom-modules/append-element $ if (blank? state) |div state
+                  d! cursor |
               =< 8 nil
               a $ {} (:inner-text |Before) (:style style/click)
-                :on $ {}
-                  :click $ on-before state
+                :on-click $ fn (e d!) (d! :dom-modules/before-element state) (d! cursor |)
               =< 8 nil
               a $ {} (:inner-text |Copy) (:style style/click)
-                :on $ {} (:click on-copy)
+                :on-click $ fn (e d!) (d! :dom-modules/copy nil)
               =< 8 nil
               a $ {} (:inner-text |Delete) (:style style/click)
-                :on $ {}
-                  :click $ on-delete path
+                :on-click $ fn (e d!) (d! :dom-modules/delete-element path)
               =< 8 nil
               a $ {} (:inner-text |Rename) (:style style/click)
-                :click $ fn (e d!)
+                :on-click $ fn (e d!)
                   if
                     not $ blank? state
                     do (d! :dom-modules/rename-element state) (d! cursor |)
@@ -538,8 +521,8 @@
           defn render-module-list (dom-modules focus)
             list->
               {} $ :style (merge style-list)
-              -> dom-modules $ map
-                fn (entry)
+              -> dom-modules (.to-list)
+                map $ fn (entry)
                   let-sugar
                         [] k m
                         , entry
@@ -549,27 +532,17 @@
                           if
                             = k $ :module focus
                             , style-highlight
-                        :on $ {}
-                          :click $ on-choose (:id m)
+                        :on-click $ fn (e d!)
+                          d! :dom-modules/choose $ :id m
                       <> (:name m) nil
                       =< 8 nil
                       span $ {} (:inner-text |insert) (:style style/click)
-                        :on $ {}
-                          :click $ on-insert k
+                        :on-click $ fn (e d!) (d! :dom-modules/insert-module k)
         |style-highlight $ quote
           def style-highlight $ {}
             :background-color $ hsl 240 40 96
-        |on-choose $ quote
-          defn on-choose (module-id)
-            fn (e d! m!) (d! :dom-modules/choose module-id)
         |on-delete $ quote
-          defn on-delete (e d! m!) (d! :dom-modules/delete-module nil)
-        |on-insert $ quote
-          defn on-insert (module-id)
-            fn (e d! m!) (d! :dom-modules/insert-module module-id)
-        |on-input $ quote
-          defn on-input (e d! m!)
-            m! $ :value e
+          defn on-delete (e d!) (d! :dom-modules/delete-module nil)
         |style-list $ quote
           def style-list $ {} (:overflow :auto) (:max-height 400)
         |comp-dom-modules $ quote
@@ -586,17 +559,19 @@
                 div
                   {} $ :style ({})
                   div ({})
-                    input $ {} (:value state) (:placeholder "|module name") (:style ui/input) (:input on-input)
+                    input $ {} (:value state) (:placeholder "|module name") (:style ui/input)
+                      :on-input $ fn (e d!)
+                        d! cursor $ :value e
                   div ({})
                     a $ {} (:inner-text |Create) (:style style/click)
-                      :click $ fn (e d!)
+                      :on-click $ fn (e d!)
                         if
                           not $ blank? state
                           do (d! :dom-modules/create state) (d! cursor |)
                     =< 8 nil
                     a $ {} (:inner-text |Rename) (:style style/click)
                     =< 8 nil
-                    a $ {} (:inner-text |Delete) (:style style/click) (:click on-delete)
+                    a $ {} (:inner-text |Delete) (:style style/click) (:on-click on-delete)
     |app.updater.user $ {}
       :ns $ quote
         ns app.updater.user $ :require
@@ -809,14 +784,13 @@
         |comp-preview $ quote
           defcomp comp-preview (tree dom-modules module-id focuses)
             let
-                paths $ -> focuses
-                  map $ fn (entry)
+                paths $ -> focuses (w-js-log) (.to-list)
+                  .map $ fn (entry)
                     :path $ last entry
               div
                 {} $ :style (merge ui/center ui/fullscreen style-preview)
                 div
-                  {} (:style style-close)
-                    :on $ {} (:click on-close)
+                  {} (:style style-close) (:on-click on-close)
                   <> |Close nil
                 if (some? tree)
                   render-element (:tree tree) paths dom-modules ([] module-id :tree) 0
@@ -842,7 +816,7 @@
                   merge (:props tree)
                     {} $ :style
                       merge (:style tree)
-                        if (contains? paths path) style-highlight
+                        if (includes? paths path) style-highlight
                   -> (:children tree)
                     map-indexed $ fn (idx child)
                       [] idx $ render-element child paths dom-modules (conj path idx) (inc level)
@@ -851,7 +825,7 @@
           def style-close $ {} (:position :fixed) (:top 8) (:right 8) (:z-index 999) (:font-size 12) (:font-family "|Josefin Sans") (:cursor :pointer)
             :color $ hsl 0 0 20 0.5
         |on-close $ quote
-          defn on-close (e d! m!)
+          defn on-close (e d!)
             d! :router/change $ {} (:name :home) (:data nil)
         |style-highlight $ quote
           def style-highlight $ {}
@@ -879,7 +853,7 @@
                 , nil
               =< 8 nil
               a
-                {} (:style style-trigger) (:click on-log-out)
+                {} (:style style-trigger) (:on-click on-log-out)
                 <> "|Log out" nil
         |style-trigger $ quote
           def style-trigger $ {} (:font-size 14) (:cursor :pointer)
@@ -964,6 +938,7 @@
             let
                 state $ or (:data states) |
                 cursor $ :cursor states
+                text state
               div
                 {} $ :style (:props layout/editor)
                 <> |Props style/title
@@ -975,9 +950,8 @@
                             , entry
                         [] k $ div
                           {} (:style style-line)
-                            :on $ {}
-                              :click $ fn (e d!)
-                                d! cursor $ str (turn-str k) "|: " v
+                            :on-click $ fn (e d!)
+                              d! cursor $ str (turn-str k) "|: " v
                           <>
                             str (turn-str k) |:
                             , nil
@@ -986,25 +960,23 @@
                 div ({})
                   input $ {} (:placeholder "|prop: value") (:value state)
                     :style $ merge ui/input style-input
-                    :input on-input
-                    :keydown $ on-keydown state
-        |on-input $ quote
-          defn on-input (e d! m!)
-            m! $ :value e
-        |on-keydown $ quote
-          defn on-keydown (text)
-            fn (e d! m!)
-              if
-                and
-                  = 13 $ :key-code e
-                  not $ blank? text
-                let-sugar
-                      [] k v
-                      map (split text |:) trim
-                  d! :dom-modules/set-prop $ {}
-                    :prop $ turn-keyword k
-                    :value $ if (blank? v) nil v
-                  m! |
+                    :on-input $ fn (e d!)
+                      d! cursor $ :value e
+                    :on-keydown $ fn (e d!)
+                      if
+                        and
+                          = 13 $ :key-code e
+                          not $ blank? text
+                        let-sugar
+                              [] k v
+                              -> text
+                                .!split $ new js/RegExp  "\":\\s*"
+                                to-calcit-data
+                                map trim
+                          d! :dom-modules/set-prop $ {}
+                            :prop $ turn-keyword k
+                            :value $ if (blank? v) nil v
+                          d! cursor |
         |style-line $ quote
           def style-line $ {} (:cursor :pointer) (:font-family "|Menlo, monospace") (:font-size 12) (:padding-left 8)
         |style-input $ quote
@@ -1024,6 +996,8 @@
           defcomp comp-style (states style-map path)
             let
                 state $ or (:data states) |
+                cursor $ :cursor states
+                text state
               div
                 {} $ :style (:style layout/editor)
                 <> |Style style/title
@@ -1035,8 +1009,8 @@
                             , entry
                         [] k $ div
                           {} (:style style-line)
-                            :on $ {}
-                              :click $ on-click k v
+                            :on-click $ fn (e d!)
+                              d! cursor $ str (turn-str k) "|: " v
                           <>
                             str (turn-str k) |:
                             , nil
@@ -1045,32 +1019,26 @@
                 div ({})
                   input $ {} (:value state) (:placeholder "|prop: value")
                     :style $ merge ui/input style-input
-                    :input on-input
-                    :keydown $ on-keydown state
-        |on-input $ quote
-          defn on-input (e d! m!)
-            m! $ :value e
-        |on-keydown $ quote
-          defn on-keydown (text)
-            fn (e d! m!)
-              let-sugar
-                    [] k v
-                    map (.split text |:) (trim)
-                if
-                  and
-                    = 13 $ :key-code e
-                    not $ blank? k
-                  do
-                    d! :dom-modules/set-style $ {}
-                      :prop $ turn-keyword k
-                      :value $ if (blank? v) nil v
-                    m! |
+                    :on-input $ fn (e d!)
+                      d! cursor $ :value e
+                    :on-keydown $ fn (e d!)
+                      let-sugar
+                            [] k v
+                            -> text
+                              .!split $ new js/RegExp "\":\\s*"
+                              to-calcit-data
+                              map trim
+                        if
+                          and
+                            = 13 $ :key-code e
+                            not $ blank? k
+                          do
+                            d! :dom-modules/set-style $ {}
+                              :prop $ turn-keyword k
+                              :value $ if (blank? v) nil v
+                            d! cursor |
         |style-line $ quote
           def style-line $ {} (:cursor :pointer) (:font-family "|Menlo, monospace") (:font-size 12) (:padding-left 8)
-        |on-click $ quote
-          defn on-click (k v)
-            fn (e d! m!)
-              m! $ str (turn-str k) "|: " v
         |style-input $ quote
           def style-input $ {} (:font-size 12) (:font-family |Menlo,monospace)
     |app.util $ {}
@@ -1141,9 +1109,9 @@
                   , style-el-name
                 =< 8 nil
                 a $ {} (:inner-text |Append) (:style style/click)
-                  :click $ fn (e d!) (d! :dom-modules/clipboard-append nil)
+                  :on-click $ fn (e d!) (d! :dom-modules/clipboard-append nil)
                 =< 8 nil
-                a $ {} (:inner-text |Before) (:style style/click) (:click on-before)
+                a $ {} (:inner-text |Before) (:style style/click) (:on-click on-before)
               <> "|Nothing in clipboard." style-nothing
         |style-nothing $ quote
           def style-nothing $ {} (:font-family "|Josefin Sans") (:font-size 14)
@@ -1153,7 +1121,7 @@
             :background-color $ hsl 240 80 80
             :padding "|0 8px"
         |on-before $ quote
-          defn on-before (e d! m!) (d! :dom-modules/clipboard-before nil)
+          defn on-before (e d!) (d! :dom-modules/clipboard-before nil)
     |app.updater.router $ {}
       :ns $ quote (ns app.updater.router)
       :defs $ {}
@@ -1178,7 +1146,7 @@
     |app.client $ {}
       :ns $ quote
         ns app.client $ :require
-          respo.core :refer $ render! clear-cache! realize-ssr!
+          respo.core :refer $ render! clear-cache!
           respo.cursor :refer $ update-states
           app.comp.container :refer $ comp-container
           app.schema :as schema
@@ -1192,7 +1160,7 @@
       :defs $ {}
         |render-app! $ quote
           defn render-app! () $ render! mount-target
-            comp-container (:states @*states) @*store
+            wo-js-log $ comp-container (:states @*states) @*store
             , dispatch!
         |*states $ quote
           defatom *states $ {}
@@ -1213,6 +1181,7 @@
         |main! $ quote
           defn main! ()
             println "\"Running mode:" $ if config/dev? "\"dev" "\"release"
+            if config/dev? $ load-console-formatter!
             render-app!
             connect!
             add-watch *store :changes $ fn (store prev) (render-app!)
@@ -1224,7 +1193,7 @@
         |dispatch! $ quote
           defn dispatch! (op op-data)
             when
-              and config/dev? $ not= op :states
+              and config/dev? $ ; not= op :states
               println "\"Dispatch" op op-data
             case-default op
               ws-send! $ {} (:kind :op) (:op op) (:data op-data)
