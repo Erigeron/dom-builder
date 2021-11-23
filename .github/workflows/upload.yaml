@@ -84,7 +84,7 @@ jobs:
         options: ''
         ssh_options: ''
         src: 'dist-server/*'
-        dest: 'rsync-user@tiye.me:/servers/calcium-workflow/'
+        dest: 'rsync-user@tiye.me:/servers/dom-builder/'
 
     - name: Display status from deploy
       run: echo "${{ steps.deploy-server.outputs.status }}"
