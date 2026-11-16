@@ -1,17 +1,18 @@
 {
   "dependencies": {
-    "@calcit/procs": "^0.5.4",
-    "shortid": "^2.2.16"
-  },
-  "scripts": {
-    "compile-page": "cr --emit-js --once",
-    "release-page": "vite build --base=./",
-    "watch-page": "cr --emit-js"
+    "@calcit/procs": "0.42.1",
+    "ws": "^8.23.0"
   },
   "devDependencies": {
     "bottom-tip": "^0.1.2",
-    "url-parse": "^1.5.9",
-    "vite": "^6.4.5"
+    "vite": "^7.0.0"
   },
-  "version": "0.0.1"
+  "version": "0.0.1",
+  "packageManager": "yarn@4.18.0",
+  "scripts": {
+    "build": "calcit calcit.cirru js && vite build --base=./",
+    "watch": "calcit calcit.cirru -w",
+    "server": "calcit calcit.cirru --entry server js && node -e 'import(\"./js-out/app.server.mjs\").then(m=>m.main_$x_())'"
+  },
+  "name": "dom-builder"
 }
