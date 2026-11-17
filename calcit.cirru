@@ -110,7 +110,9 @@
           :code $ quote $ defn render-app! ()
             render-with!
               narrow-element $ .unwrap mount-target
-              fn () $ view/comp-app dispatch! @*store
+              fn () $ view/comp-app
+                fn (op) (dispatch! op)
+                , @*store
               , on-respo-action
           :examples $ []
           :schema $ quote $ Fn (-> Unit) (:features :io :js-ffi :state)
@@ -416,13 +418,13 @@
               if (not= sid sender) (wss-send! sid data) &unit
             , &unit
           :examples $ []
-          :schema $ quote $ Fn String Dynamic (-> Unit) (:features :js-ffi)
+          :schema $ quote $ Fn String Dynamic (-> Unit) (:features :js-ffi :state)
         'main! $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defn main! () (println "|DOM Builder server at 6001")
             wss-serve! 6001 $ {} (:on-open on-open) (:on-close on-close) (:on-data on-data)
             , &unit
           :examples $ []
-          :schema $ quote $ Fn (-> Unit) (:features :io :js-ffi)
+          :schema $ quote $ Fn (-> Unit) (:features :io :js-ffi :state)
         'on-close $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defn on-close (sid event) (println |client-closed sid)
           :examples $ []
@@ -430,7 +432,7 @@
         'on-data $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defn on-data (sid data) (broadcast! sid data)
           :examples $ []
-          :schema $ quote $ Fn String Dynamic (-> Unit) (:features :js-ffi)
+          :schema $ quote $ Fn String Dynamic (-> Unit) (:features :js-ffi :state)
         'on-open $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defn on-open (sid socket) (println |client-connected sid)
           :examples $ []
