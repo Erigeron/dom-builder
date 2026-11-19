@@ -189,10 +189,10 @@
         'new-store $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defn new-store ()
             {} (:modules {}) (:focus {}) (:preview? false) (:connected? false)
-              :modules $ {} $ :main
-                {} (:id :main) (:name |Main)
+              :modules $ {} $ |main
+                {} (:id |main) (:name |Main)
                   :tree $ new-node
-              :focus $ {} (:module :main)
+              :focus $ {} (:module |main)
                 :path $ []
           :examples $ []
           :schema $ quote $ Fn
@@ -250,6 +250,17 @@
           :schema $ quote $ Fn (Map Tag Dynamic)
             -> $ Map Tag Dynamic
             :features :js-ffi
+          :tests $ [] $ %{} 'TestEntry (:name |initial-module-accepts-edit)
+            :code $ quote $ let
+                next $ store-add-child $ new-store
+                module $ store-module next
+                tree $ decode-map-as
+                  .unwrap $ get module :tree
+                  Map Tag Dynamic
+                children $ decode-map-as
+                  .unwrap $ get tree :children
+                  List Dynamic
+              assert= 1 $ count children
         'store-delete $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defn store-delete (store)
             let

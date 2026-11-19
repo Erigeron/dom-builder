@@ -35,6 +35,7 @@ jobs:
           calcit calcit.cirru --entry server --check-only
           calcit calcit.cirru fix --workflow strict --verify --format json | jq -e '.data.workflow.status == "passed" and .diagnostics == []'
           calcit calcit.cirru --entry server fix --workflow strict --verify --format json | jq -e '.data.workflow.status == "passed" and .diagnostics == []'
+          calcit calcit.cirru test --require-match
       - name: Build
         run: |
           set -euo pipefail
