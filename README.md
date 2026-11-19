@@ -13,7 +13,7 @@ The client works locally when the server is not running; run `yarn build` for th
 
 ## 使用者需要注意
 
-开发与构建使用正式 Calcit 和 `@calcit/procs` 0.44.0。前端和 WebSocket 服务须使用更新后的依赖重新构建；默认模块 ID 统一为字符串 `main`，修复初始模块读取时报键类型错误；协作消息仍使用原 Map 结构，服务器路径未改。PR 只运行检查和构建，前端 rsync 仅在主分支推送时执行。
+开发与构建使用正式 Calcit 和 `@calcit/procs` 0.44.0。前端和 WebSocket 服务须使用更新后的依赖重新构建；默认模块 ID 统一为字符串 `main`，修复初始模块读取时报键类型错误；协作消息仍使用原 Map 结构，服务器路径未改。按钮事件工厂使用明确的 Respo 事件回调类型，内部操作派发限定为 Tag 键 Map。PR 只运行检查和构建，前端 rsync 仅在主分支推送时执行。
 
 ## Develop
 

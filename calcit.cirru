@@ -514,7 +514,7 @@
                   span $ {}
           :examples $ []
           :schema $ quote $ Fn
-            Fn Dynamic $ -> Unit
+            Fn (Map Tag Dynamic) (-> Unit)
             Map Tag Dynamic
             -> respo.schema/Component
             :features :js-ffi
@@ -530,32 +530,40 @@
               dispatch $ {} $ :type :add
           :examples $ []
           :schema $ quote $ Fn
-            Fn Dynamic $ -> Unit
-            -> Dynamic
+            Fn (Map Tag Dynamic) (-> Unit)
+            -> $ Fn respo.schema/RespoEvent
+              Fn app.schema/Action (-> Unit) (:features :io :state)
+              -> Unit
         'h-delete $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defn h-delete (dispatch)
             fn (e d!)
               dispatch $ {} $ :type :delete
           :examples $ []
           :schema $ quote $ Fn
-            Fn Dynamic $ -> Unit
-            -> Dynamic
+            Fn (Map Tag Dynamic) (-> Unit)
+            -> $ Fn respo.schema/RespoEvent
+              Fn app.schema/Action (-> Unit) (:features :io :state)
+              -> Unit
         'h-new $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defn h-new (dispatch)
             fn (e d!)
               dispatch $ {} $ :type :new-module
           :examples $ []
           :schema $ quote $ Fn
-            Fn Dynamic $ -> Unit
-            -> Dynamic
+            Fn (Map Tag Dynamic) (-> Unit)
+            -> $ Fn respo.schema/RespoEvent
+              Fn app.schema/Action (-> Unit) (:features :io :state)
+              -> Unit
         'h-preview $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defn h-preview (dispatch)
             fn (e d!)
               dispatch $ {} $ :type :preview
           :examples $ []
           :schema $ quote $ Fn
-            Fn Dynamic $ -> Unit
-            -> Dynamic
+            Fn (Map Tag Dynamic) (-> Unit)
+            -> $ Fn respo.schema/RespoEvent
+              Fn app.schema/Action (-> Unit) (:features :io :state)
+              -> Unit
         'render-input $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defn render-input (dispatch label k v kind)
             div
@@ -569,7 +577,7 @@
                     :value $ event-value e
           :examples $ []
           :schema $ quote $ Fn
-            Fn Dynamic $ -> Unit
+            Fn (Map Tag Dynamic) (-> Unit)
             , String Tag String Tag (-> respo.schema/Element)
         'render-inspector $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defn render-inspector (dispatch node)
@@ -589,7 +597,7 @@
                     <> |Delete
           :examples $ []
           :schema $ quote $ Fn
-            Fn Dynamic $ -> Unit
+            Fn (Map Tag Dynamic) (-> Unit)
             Map Tag Dynamic
             -> respo.schema/Element
         'render-modules $ %{} 'CodeEntry (:doc |)
@@ -624,7 +632,7 @@
                           <> $ str $ .unwrap-or (get m :name) id
           :examples $ []
           :schema $ quote $ Fn
-            Fn Dynamic $ -> Unit
+            Fn (Map Tag Dynamic) (-> Unit)
             Map Tag Dynamic
             -> respo.schema/Element
         'render-node $ %{} 'CodeEntry (:doc |)
@@ -659,7 +667,7 @@
                   render-node node
           :examples $ []
           :schema $ quote $ Fn
-            Fn Dynamic $ -> Unit
+            Fn (Map Tag Dynamic) (-> Unit)
             Map Tag Dynamic
             -> respo.schema/Element
         'render-tree $ %{} 'CodeEntry (:doc |)
@@ -684,7 +692,7 @@
                           , focus-path
           :examples $ []
           :schema $ quote $ Fn
-            Fn Dynamic $ -> Unit
+            Fn (Map Tag Dynamic) (-> Unit)
             Map Tag Dynamic
             List Dynamic
             List Dynamic
