@@ -1,6 +1,6 @@
 {
   "dependencies": {
-    "@calcit/procs": "0.43.0",
+    "@calcit/procs": "0.44.0",
     "ws": "^8.23.0"
   },
   "devDependencies": {
