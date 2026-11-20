@@ -200,14 +200,29 @@
         'remove-index $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defn remove-index (xs idx)
             -> xs
-              map-indexed $ fn (i x) ([] i x)
-              filter $ fn (pair)
-                let[] (i x) pair $ not= i idx
-              map $ fn (pair)
-                let[] (i x) pair x
+              map-indexed $ fn (i x)
+                if (= i idx) None $ Some x
+              .filter $ fn (item) (.some? item)
+              .map $ fn (item) (.unwrap item)
           :examples $ []
-          :schema $ quote $ Fn (List Dynamic) Number
-            -> $ List Dynamic
+          :schema $ quote $ Fn (List T) Number
+            -> $ List T
+            :generics T
+          :tests $ [] $ %{} 'TestEntry (:name |preserves-elements-and-index)
+            :code $ quote $ do
+              assert= ([] |a |c)
+                remove-index ([] |a |b |c) 1
+              assert= ([] 1 3)
+                remove-index ([] 1 2 3) 1
+              assert= ([] nil |b)
+                remove-index ([] nil |b) 5
+              assert= ([] 1 2)
+                remove-index ([] 1 2) -1
+              assert= ([] 1 2)
+                remove-index ([] 1 2) 0.5
+              assert= ([])
+                remove-index ([]) 0
+            :tags $ #{} :portable
         'set-prop $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defn set-prop (tree path k v)
             update-node tree path $ fn (node)
