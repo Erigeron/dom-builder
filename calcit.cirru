@@ -321,8 +321,9 @@
                 .unwrap $ get modules mid
                 Map Tag Dynamic
           :examples $ []
-          :schema $ quote $ Fn (Map Tag Dynamic)
+          :schema $ quote $ Fn (Map Tag V)
             -> $ Map Tag Dynamic
+            :generics V
         'store-new-module $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defn store-new-module (store)
             let
@@ -671,8 +672,9 @@
           :examples $ []
           :schema $ quote $ Fn
             Fn (Map Tag InputActionValue) (-> Unit)
-            Map Tag Dynamic
+            Map Tag V
             -> respo.schema/Element
+            :generics V
         'render-node $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defn render-node (node)
             let
