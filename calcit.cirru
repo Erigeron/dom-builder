@@ -491,6 +491,10 @@
           :code $ quote $ defunion InputActionValue Tag String
           :examples $ []
           :schema $ quote UnionDef
+        'TreeActionValue $ %{} 'CodeEntry (:doc |)
+          :code $ quote $ defunion TreeActionValue Tag (List Number)
+          :examples $ []
+          :schema $ quote UnionDef
         'append-index $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defn append-index (path idx) (conj path idx)
           :examples $ []
@@ -726,9 +730,9 @@
                           , focus-path
           :examples $ []
           :schema $ quote $ Fn
-            Fn (Map Tag Dynamic) (-> Unit)
+            Fn (Map Tag TreeActionValue) (-> Unit)
             Map Tag Dynamic
-            List Dynamic
+            List Number
             List Dynamic
             -> respo.schema/Element
             :features :js-ffi
