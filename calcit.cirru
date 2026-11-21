@@ -487,6 +487,10 @@
           :require $ ws-edn.server :refer $ wss-serve! wss-send! wss-each!
     'app.view $ %{} 'FileEntry
       :defs $ {}
+        'InputActionValue $ %{} 'CodeEntry (:doc |)
+          :code $ quote $ defunion InputActionValue Tag String
+          :examples $ []
+          :schema $ quote UnionDef
         'append-index $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defn append-index (path idx) (conj path idx)
           :examples $ []
@@ -560,7 +564,7 @@
               dispatch $ {} $ :type :add
           :examples $ []
           :schema $ quote $ Fn
-            Fn (Map Tag Dynamic) (-> Unit)
+            Fn (Map Tag Tag) (-> Unit)
             -> $ Fn respo.schema/RespoEvent
               Fn app.schema/Action (-> Unit) (:features :io :state)
               -> Unit
@@ -570,7 +574,7 @@
               dispatch $ {} $ :type :delete
           :examples $ []
           :schema $ quote $ Fn
-            Fn (Map Tag Dynamic) (-> Unit)
+            Fn (Map Tag Tag) (-> Unit)
             -> $ Fn respo.schema/RespoEvent
               Fn app.schema/Action (-> Unit) (:features :io :state)
               -> Unit
@@ -580,7 +584,7 @@
               dispatch $ {} $ :type :new-module
           :examples $ []
           :schema $ quote $ Fn
-            Fn (Map Tag Dynamic) (-> Unit)
+            Fn (Map Tag Tag) (-> Unit)
             -> $ Fn respo.schema/RespoEvent
               Fn app.schema/Action (-> Unit) (:features :io :state)
               -> Unit
@@ -590,7 +594,7 @@
               dispatch $ {} $ :type :preview
           :examples $ []
           :schema $ quote $ Fn
-            Fn (Map Tag Dynamic) (-> Unit)
+            Fn (Map Tag Tag) (-> Unit)
             -> $ Fn respo.schema/RespoEvent
               Fn app.schema/Action (-> Unit) (:features :io :state)
               -> Unit
@@ -607,7 +611,7 @@
                     :value $ event-value e
           :examples $ []
           :schema $ quote $ Fn
-            Fn (Map Tag Dynamic) (-> Unit)
+            Fn (Map Tag InputActionValue) (-> Unit)
             , String Tag String Tag (-> respo.schema/Element)
         'render-inspector $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defn render-inspector (dispatch node)
