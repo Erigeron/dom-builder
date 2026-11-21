@@ -487,6 +487,14 @@
           :require $ ws-edn.server :refer $ wss-serve! wss-send! wss-each!
     'app.view $ %{} 'FileEntry
       :defs $ {}
+        'InputActionValue $ %{} 'CodeEntry (:doc |)
+          :code $ quote $ defunion InputActionValue Tag String
+          :examples $ []
+          :schema $ quote UnionDef
+        'TreeActionValue $ %{} 'CodeEntry (:doc |)
+          :code $ quote $ defunion TreeActionValue Tag (List Number)
+          :examples $ []
+          :schema $ quote UnionDef
         'append-index $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defn append-index (path idx) (conj path idx)
           :examples $ []
@@ -560,7 +568,7 @@
               dispatch $ {} $ :type :add
           :examples $ []
           :schema $ quote $ Fn
-            Fn (Map Tag Dynamic) (-> Unit)
+            Fn (Map Tag Tag) (-> Unit)
             -> $ Fn respo.schema/RespoEvent
               Fn app.schema/Action (-> Unit) (:features :io :state)
               -> Unit
@@ -570,7 +578,7 @@
               dispatch $ {} $ :type :delete
           :examples $ []
           :schema $ quote $ Fn
-            Fn (Map Tag Dynamic) (-> Unit)
+            Fn (Map Tag Tag) (-> Unit)
             -> $ Fn respo.schema/RespoEvent
               Fn app.schema/Action (-> Unit) (:features :io :state)
               -> Unit
@@ -580,7 +588,7 @@
               dispatch $ {} $ :type :new-module
           :examples $ []
           :schema $ quote $ Fn
-            Fn (Map Tag Dynamic) (-> Unit)
+            Fn (Map Tag Tag) (-> Unit)
             -> $ Fn respo.schema/RespoEvent
               Fn app.schema/Action (-> Unit) (:features :io :state)
               -> Unit
@@ -590,7 +598,7 @@
               dispatch $ {} $ :type :preview
           :examples $ []
           :schema $ quote $ Fn
-            Fn (Map Tag Dynamic) (-> Unit)
+            Fn (Map Tag Tag) (-> Unit)
             -> $ Fn respo.schema/RespoEvent
               Fn app.schema/Action (-> Unit) (:features :io :state)
               -> Unit
@@ -607,7 +615,7 @@
                     :value $ event-value e
           :examples $ []
           :schema $ quote $ Fn
-            Fn (Map Tag Dynamic) (-> Unit)
+            Fn (Map Tag InputActionValue) (-> Unit)
             , String Tag String Tag (-> respo.schema/Element)
         'render-inspector $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defn render-inspector (dispatch node)
@@ -662,7 +670,7 @@
                           <> $ str $ .unwrap-or (get m :name) id
           :examples $ []
           :schema $ quote $ Fn
-            Fn (Map Tag Dynamic) (-> Unit)
+            Fn (Map Tag InputActionValue) (-> Unit)
             Map Tag Dynamic
             -> respo.schema/Element
         'render-node $ %{} 'CodeEntry (:doc |)
@@ -722,9 +730,9 @@
                           , focus-path
           :examples $ []
           :schema $ quote $ Fn
-            Fn (Map Tag Dynamic) (-> Unit)
+            Fn (Map Tag TreeActionValue) (-> Unit)
             Map Tag Dynamic
-            List Dynamic
+            List Number
             List Dynamic
             -> respo.schema/Element
             :features :js-ffi
