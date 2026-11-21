@@ -666,7 +666,7 @@
                           <> $ str $ .unwrap-or (get m :name) id
           :examples $ []
           :schema $ quote $ Fn
-            Fn (Map Tag Dynamic) (-> Unit)
+            Fn (Map Tag InputActionValue) (-> Unit)
             Map Tag Dynamic
             -> respo.schema/Element
         'render-node $ %{} 'CodeEntry (:doc |)
