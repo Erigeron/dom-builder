@@ -141,9 +141,8 @@
         'delete-node $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defn delete-node (tree path)
             if (empty? path) tree $ let
-                parent-path $ unsafe-coerce
-                  slice path 0 $ Some $ - (count path) 1
-                  List Dynamic
+                parent-path $ slice path 0 $ Some
+                  - (count path) 1
                 raw-idx $ .unwrap $ last path
                 idx $ if (number? raw-idx) raw-idx 0
               update-node tree parent-path $ fn (node)
@@ -154,6 +153,22 @@
           :schema $ quote $ Fn (Map Tag Dynamic) (List Dynamic)
             -> $ Map Tag Dynamic
             :features :js-ffi
+          :tests $ [] $ %{} 'TestEntry (:name |nested-delete-preserves-other-nodes)
+            :code $ quote $ let
+                first-child $ {} $ :id |first
+                second-child $ {} $ :id |second
+                branch $ {} (:id |branch)
+                  :children $ [] first-child second-child
+                other $ {} $ :id |other
+                tree $ {} $ :children ([] branch other)
+                expected $ {} $ :children
+                  []
+                    {} (:id |branch)
+                      :children $ [] second-child
+                    , other
+              assert= expected $ delete-node tree $ [] 0 0
+              assert= tree $ delete-node tree $ []
+            :tags $ #{} :portable
         'ensure-list $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defn ensure-list (x)
             if (list? x) x $ []
@@ -200,14 +215,29 @@
         'remove-index $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defn remove-index (xs idx)
             -> xs
-              map-indexed $ fn (i x) ([] i x)
-              filter $ fn (pair)
-                let[] (i x) pair $ not= i idx
-              map $ fn (pair)
-                let[] (i x) pair x
+              map-indexed $ fn (i x)
+                if (= i idx) None $ Some x
+              .filter $ fn (item) (.some? item)
+              .map $ fn (item) (.unwrap item)
           :examples $ []
-          :schema $ quote $ Fn (List Dynamic) Number
-            -> $ List Dynamic
+          :schema $ quote $ Fn (List T) Number
+            -> $ List T
+            :generics T
+          :tests $ [] $ %{} 'TestEntry (:name |preserves-elements-and-index)
+            :code $ quote $ do
+              assert= ([] |a |c)
+                remove-index ([] |a |b |c) 1
+              assert= ([] 1 3)
+                remove-index ([] 1 2 3) 1
+              assert= ([] nil |b)
+                remove-index ([] nil |b) 5
+              assert= ([] 1 2)
+                remove-index ([] 1 2) -1
+              assert= ([] 1 2)
+                remove-index ([] 1 2) 0.5
+              assert= ([])
+                remove-index ([]) 0
+            :tags $ #{} :portable
         'set-prop $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defn set-prop (tree path k v)
             update-node tree path $ fn (node)
