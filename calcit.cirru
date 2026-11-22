@@ -20,7 +20,9 @@
           :examples $ []
         'connect! $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defn connect! ()
-            ws-connect! |ws://localhost:6001 $ {} (:on-open on-ws-open) (:on-close on-ws-close) (:on-data on-server-data)
+            ws-edn.client/ws-connect-typed! |ws://localhost:6001
+              ws-edn.client/ClientConfig :retry-base-ms None :retry-max-ms None :retry-jitter None :heartbeat-timeout-ms None :class-mapper $ {}
+              ws-edn.client/ClientCallbacks :on-open (Some on-ws-open) :on-close (Some on-ws-close) :on-error None :on-data $ Some on-server-data
             , &unit
           :examples $ []
           :schema $ quote $ Fn (-> Unit) (:features :io :js-ffi :state)
@@ -93,13 +95,13 @@
             swap! *store $ fn (store) (assoc store :connected? false)
             render-app!
           :examples $ []
-          :schema $ quote $ Fn Dynamic (-> Unit) (:features :io :js-ffi :state)
+          :schema $ quote $ Fn js-ffi.browser/EventHost (-> Unit) (:features :io :js-ffi :state)
         'on-ws-open $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defn on-ws-open (event)
             swap! *store $ fn (store) (assoc store :connected? true)
             render-app!
           :examples $ []
-          :schema $ quote $ Fn Dynamic (-> Unit) (:features :io :js-ffi :state)
+          :schema $ quote $ Fn js-ffi.browser/EventHost (-> Unit) (:features :io :js-ffi :state)
         'reload! $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defn reload! ()
             if (nil? build-errors) (render-app!) (println build-errors)
