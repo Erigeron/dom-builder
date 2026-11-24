@@ -656,16 +656,15 @@
               div
                 {} $ :style $ {} (:padding 12) (:width 180) (:border-right "|1px solid #eee") (:overflow :auto)
                 <> |Modules
-                list->
+                respo.core/keyed->
                   {} $ :style $ {}
                   map (.to-list modules)
                     fn (entry)
-                      hint-fn $ Fn (Tuple String Dynamic)
-                        -> $ List Dynamic
+                      hint-fn $ Fn (Tuple String Dynamic) (-> respo.schema/ChildPair)
                       let[] (id raw-m) entry $ let
                           m $ decode-map-as raw-m $ Map Tag Dynamic
                           selected? $ = id mid
-                        [] id $ div
+                        respo.core/keyed-element id $ div
                           {}
                             :style $ merge
                               {} (:padding "|6px 8px") (:cursor :pointer) (:font-size 13)
