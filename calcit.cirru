@@ -498,6 +498,10 @@
           :code $ quote $ defunion TreeActionValue Tag (List Number)
           :examples $ []
           :schema $ quote UnionDef
+        'ViewActionValue $ %{} 'CodeEntry (:doc |)
+          :code $ quote $ defunion ViewActionValue Tag String (List Number)
+          :examples $ []
+          :schema $ quote UnionDef
         'append-index $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defn append-index (path idx) (conj path idx)
           :examples $ []
@@ -555,7 +559,7 @@
                   span $ {}
           :examples $ []
           :schema $ quote $ Fn
-            Fn (Map Tag Dynamic) (-> Unit)
+            Fn (Map Tag ViewActionValue) (-> Unit)
             Map Tag Dynamic
             -> respo.schema/Component
             :features :js-ffi
@@ -638,7 +642,7 @@
                     <> |Delete
           :examples $ []
           :schema $ quote $ Fn
-            Fn (Map Tag Dynamic) (-> Unit)
+            Fn (Map Tag InputActionValue) (-> Unit)
             Map Tag Dynamic
             -> respo.schema/Element
         'render-modules $ %{} 'CodeEntry (:doc |)
@@ -709,7 +713,7 @@
                   render-node node
           :examples $ []
           :schema $ quote $ Fn
-            Fn (Map Tag Dynamic) (-> Unit)
+            Fn (Map Tag Tag) (-> Unit)
             Map Tag Dynamic
             -> respo.schema/Element
         'render-tree $ %{} 'CodeEntry (:doc |)
