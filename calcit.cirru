@@ -728,10 +728,10 @@
                   span $ {}
                   div
                     {} $ :style $ {} (:padding-left 14)
-                    list->
+                    respo.core/keyed->
                       {} $ :style $ {}
                       map-indexed children $ fn (idx child)
-                        [] idx $ render-tree dispatch
+                        respo.core/keyed-element idx $ render-tree dispatch
                           decode-map-as child $ Map Tag Dynamic
                           conj path idx
                           , focus-path
