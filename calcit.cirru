@@ -498,6 +498,10 @@
           :code $ quote $ defunion TreeActionValue Tag (List Number)
           :examples $ []
           :schema $ quote UnionDef
+        'ViewActionValue $ %{} 'CodeEntry (:doc |)
+          :code $ quote $ defunion ViewActionValue Tag String (List Number)
+          :examples $ []
+          :schema $ quote UnionDef
         'append-index $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defn append-index (path idx) (conj path idx)
           :examples $ []
@@ -555,7 +559,7 @@
                   span $ {}
           :examples $ []
           :schema $ quote $ Fn
-            Fn (Map Tag Dynamic) (-> Unit)
+            Fn (Map Tag ViewActionValue) (-> Unit)
             Map Tag Dynamic
             -> respo.schema/Component
             :features :js-ffi
@@ -638,7 +642,7 @@
                     <> |Delete
           :examples $ []
           :schema $ quote $ Fn
-            Fn (Map Tag Dynamic) (-> Unit)
+            Fn (Map Tag InputActionValue) (-> Unit)
             Map Tag Dynamic
             -> respo.schema/Element
         'render-modules $ %{} 'CodeEntry (:doc |)
@@ -652,16 +656,15 @@
               div
                 {} $ :style $ {} (:padding 12) (:width 180) (:border-right "|1px solid #eee") (:overflow :auto)
                 <> |Modules
-                list->
+                respo.core/keyed->
                   {} $ :style $ {}
                   map (.to-list modules)
                     fn (entry)
-                      hint-fn $ Fn (Tuple String Dynamic)
-                        -> $ List Dynamic
+                      hint-fn $ Fn (Tuple String Dynamic) (-> respo.schema/ChildPair)
                       let[] (id raw-m) entry $ let
                           m $ decode-map-as raw-m $ Map Tag Dynamic
                           selected? $ = id mid
-                        [] id $ div
+                        respo.core/keyed-element id $ div
                           {}
                             :style $ merge
                               {} (:padding "|6px 8px") (:cursor :pointer) (:font-size 13)
@@ -709,7 +712,7 @@
                   render-node node
           :examples $ []
           :schema $ quote $ Fn
-            Fn (Map Tag Dynamic) (-> Unit)
+            Fn (Map Tag Tag) (-> Unit)
             Map Tag Dynamic
             -> respo.schema/Element
         'render-tree $ %{} 'CodeEntry (:doc |)
@@ -725,10 +728,10 @@
                   span $ {}
                   div
                     {} $ :style $ {} (:padding-left 14)
-                    list->
+                    respo.core/keyed->
                       {} $ :style $ {}
                       map-indexed children $ fn (idx child)
-                        [] idx $ render-tree dispatch
+                        respo.core/keyed-element idx $ render-tree dispatch
                           decode-map-as child $ Map Tag Dynamic
                           conj path idx
                           , focus-path
