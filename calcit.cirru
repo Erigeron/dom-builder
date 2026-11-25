@@ -66,7 +66,10 @@
                             if (= t :select-module)
                               model/store-select-module store $ str $ .unwrap-or (get op :module) |main
                               if (= t :preview)
-                                assoc store :preview? $ not $ .unwrap-or (get store :preview?) false
+                                assoc store :preview? $ let
+                                    x $ .unwrap-or (get store :preview?) false
+                                  or (nil? x) (= x false)
+                                    = (type-of x) :unit
                                 , store
           :examples $ []
           :schema $ quote $ Fn (Map Tag Dynamic) (Map Tag Dynamic)
@@ -537,7 +540,10 @@
                     span
                       {} $ :style $ {} (:font-size 12)
                       <> $ if
-                        .unwrap-or (get store :connected?) false
+                        let
+                            x $ .unwrap-or (get store :connected?) false
+                          not $ or (nil? x) (= x false)
+                            = (type-of x) :unit
                         , |Connected |Local
                     span
                       {} $ :on-click $ h-new dispatch
@@ -554,7 +560,10 @@
                     render-tree dispatch tree ([]) path
                   render-inspector dispatch node
                 if
-                  .unwrap-or (get store :preview?) false
+                  let
+                      x $ .unwrap-or (get store :preview?) false
+                    not $ or (nil? x) (= x false)
+                      = (type-of x) :unit
                   render-preview dispatch tree
                   span $ {}
           :examples $ []
