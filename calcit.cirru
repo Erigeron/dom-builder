@@ -66,7 +66,10 @@
                             if (= t :select-module)
                               model/store-select-module store $ str $ .unwrap-or (get op :module) |main
                               if (= t :preview)
-                                assoc store :preview? $ not $ .unwrap-or (get store :preview?) false
+                                assoc store :preview? $ let
+                                    x $ .unwrap-or (get store :preview?) false
+                                  or (nil? x) (= x false)
+                                    = (type-of x) :unit
                                 , store
           :examples $ []
           :schema $ quote $ Fn (Map Tag Dynamic) (Map Tag Dynamic)
@@ -130,6 +133,11 @@
             |./calcit.build-errors :default build-errors
     'app.model $ %{} 'FileEntry
       :defs $ {}
+        'NodeField $ %{} 'CodeEntry (:doc |)
+          :code $ quote $ defunion NodeField Tag (Map Tag String)
+            List $ Map Tag NodeField
+          :examples $ []
+          :schema $ quote UnionDef
         'append-child $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defn append-child (tree path child)
             update-node tree path $ fn (node)
@@ -202,7 +210,7 @@
               :children $ []
           :examples $ []
           :schema $ quote $ Fn
-            -> $ Map Tag Dynamic
+            -> $ Map Tag NodeField
         'new-store $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defn new-store ()
             {} (:modules {}) (:focus {}) (:preview? false) (:connected? false)
@@ -537,7 +545,10 @@
                     span
                       {} $ :style $ {} (:font-size 12)
                       <> $ if
-                        .unwrap-or (get store :connected?) false
+                        let
+                            x $ .unwrap-or (get store :connected?) false
+                          not $ or (nil? x) (= x false)
+                            = (type-of x) :unit
                         , |Connected |Local
                     span
                       {} $ :on-click $ h-new dispatch
@@ -554,7 +565,10 @@
                     render-tree dispatch tree ([]) path
                   render-inspector dispatch node
                 if
-                  .unwrap-or (get store :preview?) false
+                  let
+                      x $ .unwrap-or (get store :preview?) false
+                    not $ or (nil? x) (= x false)
+                      = (type-of x) :unit
                   render-preview dispatch tree
                   span $ {}
           :examples $ []
