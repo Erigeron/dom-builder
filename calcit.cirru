@@ -133,6 +133,11 @@
             |./calcit.build-errors :default build-errors
     'app.model $ %{} 'FileEntry
       :defs $ {}
+        'NodeField $ %{} 'CodeEntry (:doc |)
+          :code $ quote $ defunion NodeField Tag (Map Tag String)
+            List $ Map Tag NodeField
+          :examples $ []
+          :schema $ quote UnionDef
         'append-child $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defn append-child (tree path child)
             update-node tree path $ fn (node)
@@ -205,7 +210,7 @@
               :children $ []
           :examples $ []
           :schema $ quote $ Fn
-            -> $ Map Tag Dynamic
+            -> $ Map Tag NodeField
         'new-store $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defn new-store ()
             {} (:modules {}) (:focus {}) (:preview? false) (:connected? false)
