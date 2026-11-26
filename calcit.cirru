@@ -47,7 +47,9 @@
         'next-store $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defn next-store (store op)
             let
-                t $ .unwrap-or (get op :type) |
+                t $ let
+                    raw-type $ .unwrap-or (get op :type) |
+                  if (tag? raw-type) (decode-map-as raw-type Tag) :noop
               if (= t :select)
                 model/store-select store $ model/ensure-list $ .unwrap-or (get op :path) ([])
                 if (= t :add) (model/store-add-child store)
@@ -68,7 +70,9 @@
                               if (= t :preview)
                                 assoc store :preview? $ let
                                     x $ .unwrap-or (get store :preview?) false
-                                  or (nil? x) (= x false)
+                                  or (nil? x)
+                                    and (bool? x)
+                                      = (decode-map-as x Bool) false
                                     = (type-of x) :unit
                                 , store
           :examples $ []
@@ -190,10 +194,10 @@
             if (empty? path) tree $ let
                 raw-idx $ .unwrap $ first path
                 idx $ if (number? raw-idx) raw-idx 0
-                children $ unsafe-coerce
+                children $ decode-map-as
                   .unwrap-or (get tree :children) ([])
                   List Dynamic
-                child $ nth children idx
+                child $ .unwrap $ nth children idx
                 tail $ if (list? path) (rest path) ([])
               recur
                 decode-map-as child $ Map Tag Dynamic
@@ -202,6 +206,20 @@
           :schema $ quote $ Fn (Map Tag Dynamic) Dynamic
             -> $ Map Tag Dynamic
             :features :js-ffi
+          :tests $ [] $ %{} 'TestEntry (:name |traverses-child)
+            :code $ quote $ do
+              assert=
+                {} $ :tag :leaf
+                get-node
+                  {} $ :children $ []
+                    {} $ :tag :leaf
+                  [] 0
+              assert=
+                {} $ :tag :root
+                get-node
+                  {} $ :tag :root
+                  []
+            :tags $ #{} :portable
         'new-node $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defn new-node ()
             {} (:type :element) (:tag :div)
@@ -440,7 +458,9 @@
                   idx $ .unwrap $ first path
                   children $ ensure-list $ .unwrap-or (get tree :children) ([])
                 assoc tree :children $ map-indexed children $ fn (i child)
-                  if (= i idx)
+                  if
+                    and (number? idx)
+                      = i $ decode-map-as idx Number
                     update-node
                       decode-map-as child $ Map Tag Dynamic
                       rest path
@@ -547,7 +567,9 @@
                       <> $ if
                         let
                             x $ .unwrap-or (get store :connected?) false
-                          not $ or (nil? x) (= x false)
+                          not $ or (nil? x)
+                            and (bool? x)
+                              = (decode-map-as x Bool) false
                             = (type-of x) :unit
                         , |Connected |Local
                     span
@@ -567,7 +589,9 @@
                 if
                   let
                       x $ .unwrap-or (get store :preview?) false
-                    not $ or (nil? x) (= x false)
+                    not $ or (nil? x)
+                      and (bool? x)
+                        = (decode-map-as x Bool) false
                       = (type-of x) :unit
                   render-preview dispatch tree
                   span $ {}
