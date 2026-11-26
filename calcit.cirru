@@ -194,10 +194,10 @@
             if (empty? path) tree $ let
                 raw-idx $ .unwrap $ first path
                 idx $ if (number? raw-idx) raw-idx 0
-                children $ unsafe-coerce
+                children $ decode-map-as
                   .unwrap-or (get tree :children) ([])
                   List Dynamic
-                child $ nth children idx
+                child $ .unwrap $ nth children idx
                 tail $ if (list? path) (rest path) ([])
               recur
                 decode-map-as child $ Map Tag Dynamic
@@ -206,6 +206,20 @@
           :schema $ quote $ Fn (Map Tag Dynamic) Dynamic
             -> $ Map Tag Dynamic
             :features :js-ffi
+          :tests $ [] $ %{} 'TestEntry (:name |traverses-child)
+            :code $ quote $ do
+              assert=
+                {} $ :tag :leaf
+                get-node
+                  {} $ :children $ []
+                    {} $ :tag :leaf
+                  [] 0
+              assert=
+                {} $ :tag :root
+                get-node
+                  {} $ :tag :root
+                  []
+            :tags $ #{} :portable
         'new-node $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defn new-node ()
             {} (:type :element) (:tag :div)
