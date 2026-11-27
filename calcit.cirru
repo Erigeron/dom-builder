@@ -87,7 +87,8 @@
           :code $ quote $ defn on-server-data (data)
             let
                 t $ .unwrap-or (get data :kind) |
-              if (= t :store)
+              if
+                and (tag? t) (= t :store)
                 do
                   reset! *store $ decode-map-as
                     .unwrap-or (get data :data) ({})
@@ -701,7 +702,7 @@
                       hint-fn $ Fn (Tuple String Dynamic) (-> respo.schema/ChildPair)
                       let[] (id raw-m) entry $ let
                           m $ decode-map-as raw-m $ Map Tag Dynamic
-                          selected? $ = id mid
+                          selected? $ and (string? mid) (= id mid)
                         respo.core/keyed-element id $ div
                           {}
                             :style $ merge
