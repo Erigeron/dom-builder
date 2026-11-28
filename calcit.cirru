@@ -35,7 +35,7 @@
               ws-send! $ {} (:kind :store) (:data next)
               render-app!
           :examples $ []
-          :schema $ quote $ Fn Dynamic (-> Unit) (:features :io :js-ffi :state)
+          :schema $ quote $ Fn (Map Tag view/ViewActionValue) (-> Unit) (:features :io :js-ffi :state)
         'main! $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defn main! () (connect!) (render-app!) &unit
           :examples $ []
